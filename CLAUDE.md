@@ -32,3 +32,10 @@ Next.js 16 has meaningful breaking changes from older versions/training data —
 - `middleware.ts` is renamed `proxy.ts` (irrelevant here anyway since static export doesn't support proxy).
 - ESLint uses flat config (`eslint.config.mjs`) — there is no `next lint`.
 - Given `output: "export"`, don't introduce Route Handlers, Server Actions, `cookies()`/`headers()`, or default-loader `next/image` optimization — none of it will work in the deployed build.
+
+## Rules
+
+- **Keep the site light and smooth.** Watch bundle size and runtime performance on every change — optimize images (`next/image` with explicit `width`/`height`), avoid unnecessary client-side JS/`"use client"`, lazy-load anything heavy, and prefer CSS over JS for animation/interaction where possible.
+- **Follow coding best practices.** Idiomatic, type-safe TypeScript; no dead code; keep components small and readable; match existing conventions in this repo rather than inventing new ones.
+- **Treat security as a first-class concern.** Sanitize/validate any external input, avoid `dangerouslySetInnerHTML` unless unavoidable and sanitized, keep dependencies minimal and current, never commit secrets or credentials, and be mindful that this is a public static site (everything shipped is visible to anyone).
+- **Never `git commit` or `git push` without asking first.** Always confirm with the user immediately before running either, even if a prior commit/push was just approved.
