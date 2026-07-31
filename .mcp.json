@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "gemini-video": {
+      "command": "node",
+      "args": ["tools/gemini-video-mcp/index.mjs"]
+    }
+  }
+}

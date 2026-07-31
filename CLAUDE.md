@@ -33,6 +33,11 @@ Next.js 16 has meaningful breaking changes from older versions/training data —
 - ESLint uses flat config (`eslint.config.mjs`) — there is no `next lint`.
 - Given `output: "export"`, don't introduce Route Handlers, Server Actions, `cookies()`/`headers()`, or default-loader `next/image` optimization — none of it will work in the deployed build.
 
+## Tooling
+
+- **`tools/gemini-video-mcp/`** — a local MCP server (own `package.json`, not a dependency of the site) wrapping Google's `@google/genai` SDK for Veo video generation, used to produce video assets for the 3D/animation build. Registered project-wide via `.mcp.json`. See its `README.md` for tool details.
+- **Env vars/secrets convention:** every config folder that needs secrets keeps a `.env` (gitignored, real values, never committed) alongside a tracked `.env.example` (placeholder values, kept in sync). When adding a new key anywhere in this repo, add it to both files together.
+
 ## Rules
 
 - **Keep the site light and smooth.** Watch bundle size and runtime performance on every change — optimize images (`next/image` with explicit `width`/`height`), avoid unnecessary client-side JS/`"use client"`, lazy-load anything heavy, and prefer CSS over JS for animation/interaction where possible.
