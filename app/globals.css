@@ -1,26 +1,189 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* heynesh.com-derived palette: warm cream base, pure-black contrast
+     sections, and an electric yellow accent — sampled directly from the
+     live site's computed styles. */
+  --cream: #d5cfbe;
+  --cream-card: #dfdece;
+  --cream-card-2: #ebeada;
+  --ink: #000000;
+  --ink-muted: #55564f;
+  --gray: #a6a6a6;
+  --yellow: #ffff23;
+  --border: rgba(0, 0, 0, 0.12);
+  --border-on-black: rgba(255, 255, 255, 0.14);
+
+  --background: var(--cream);
+  --foreground: var(--ink);
 }
 
 @theme inline {
+  --color-cream: var(--cream);
+  --color-cream-card: var(--cream-card);
+  --color-cream-card-2: var(--cream-card-2);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-gray: var(--gray);
+  --color-yellow: var(--yellow);
+  --color-border-soft: var(--border);
+  --color-border-on-black: var(--border-on-black);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+::selection {
+  background: var(--yellow);
+  color: #000;
+}
+
+.font-display {
+  font-family: var(--font-display), var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Giant background wordmark used behind section headers, heynesh-style */
+.bg-wordmark {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(6rem, 18vw, 13rem);
+  font-weight: 800;
+  line-height: 0.8;
+  white-space: nowrap;
+  background: linear-gradient(120deg, var(--yellow) 30%, rgba(255, 255, 35, 0.35));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  opacity: 0.6;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+}
+
+/* Scroll-reveal (applied by <Reveal>). Visible by default with zero JS —
+   the entrance motion below is a pure-CSS progressive enhancement that only
+   engages in browsers supporting scroll-driven animations, so content can
+   never get stuck invisible. */
+.reveal {
+  opacity: 1;
+  transform: none;
+}
+
+@supports (animation-timeline: view()) {
+  .reveal {
+    animation: reveal-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+
+  @keyframes reveal-in {
+    from {
+      opacity: 0;
+      transform: translateY(28px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .animate-float,
+  .animate-float-slow,
+  .animate-pulse-dot {
+    animation: none;
+  }
+}
+
+/* Floating shapes */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-14px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: float 9s ease-in-out infinite;
+}
+
+/* Availability pulsing dot */
+@keyframes pulse-dot {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 0 6px rgba(74, 222, 128, 0);
+  }
+}
+
+.animate-pulse-dot {
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+/* FAQ accordion chevron */
+details[open] .faq-chevron {
+  transform: rotate(45deg);
+}
+
+details > summary {
+  list-style: none;
+}
+
+details > summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Timeline connector rail */
+.timeline-rail {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--ink) 0,
+    var(--ink) 6px,
+    transparent 6px,
+    transparent 12px
+  );
+  opacity: 0.35;
+}
+
+@media (min-width: 768px) {
+  .timeline-rail {
+    left: 50%;
+  }
 }
