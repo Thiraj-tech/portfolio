@@ -1,4 +1,7 @@
+"use client";
+
 import type { ReactNode } from "react";
+import { motion } from "motion/react";
 
 type RevealProps = {
   children: ReactNode;
@@ -8,19 +11,26 @@ type RevealProps = {
 };
 
 /**
- * Scroll-reveal wrapper. Content is fully visible by default with zero
- * JavaScript — the entrance motion is a pure-CSS progressive enhancement
- * (native scroll-driven animation, see .reveal in globals.css) that only
- * activates in browsers that support it. Nothing here can ever leave
- * content stuck invisible, regardless of hydration or JS state.
+ * Scroll-triggered reveal wrapper built on motion's `whileInView`. Animates
+ * once per element (`viewport={{ once: true }}`), and — via the root
+ * `MotionConfig reducedMotion="user"` in HeroTransitionContext — collapses
+ * to an instant opacity change when the visitor has reduced motion enabled.
  */
 export default function Reveal({ children, className, delay = 0 }: RevealProps) {
   return (
-    <div
-      className={`reveal ${className ?? ""}`}
-      style={delay ? { animationDelay: `${delay}ms` } : undefined}
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.25 }}
+      transition={{
+        type: "spring",
+        stiffness: 200,
+        damping: 26,
+        delay: delay / 1000,
+      }}
+      className={className}
     >
       {children}
-    </div>
+    </motion.div>
   );
 }

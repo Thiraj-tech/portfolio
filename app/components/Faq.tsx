@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
 
 const faqs = [
   {
@@ -29,31 +30,41 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="py-24">
+    <section id="faq" className="pt-[20px] pb-24">
       <div className="mx-auto max-w-3xl px-6">
-        <Reveal>
-          <p className="mb-3 inline-block rounded-full border border-ink/20 px-4 py-1.5 font-mono text-sm tracking-widest uppercase">
-            FAQ
-          </p>
-          <h2 className="font-display text-3xl font-bold tracking-tight sm:text-5xl">
-            Got Any Questions?
-          </h2>
-        </Reveal>
+        <div className="flex flex-wrap items-end justify-between gap-4">
+          <SectionHeading eyebrow="FAQ" title="Got Any Questions?" />
+          <span className="mb-1 font-mono text-xs tracking-widest text-ink-muted uppercase">
+            {String(faqs.length).padStart(2, "0")} Questions
+          </span>
+        </div>
 
-        <div className="mt-12 space-y-4">
+        <div className="mt-10 border-t border-border-soft">
           {faqs.map((faq, i) => (
             <Reveal key={faq.q} delay={(i % 3) * 60}>
-              <details className="group rounded-2xl bg-cream-card transition-colors open:bg-cream-card-2">
-                <summary className="flex cursor-pointer items-center justify-between gap-4 p-6 text-left font-medium">
-                  {faq.q}
+              <details className="group relative border-b border-border-soft">
+                <span
+                  aria-hidden
+                  className="absolute inset-y-2 -left-6 w-[3px] origin-center scale-y-0 rounded-full bg-yellow transition-transform duration-300 group-hover:scale-y-100 group-open:scale-y-100"
+                />
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-6 py-6">
+                  <span className="flex gap-4">
+                    <span className="mt-1 w-8 shrink-0 font-mono text-xs text-yellow">
+                      Q{String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-display text-lg font-semibold sm:text-xl">
+                      {faq.q}
+                    </span>
+                  </span>
                   <span
                     aria-hidden
-                    className="faq-chevron flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-yellow text-lg text-ink transition-transform"
+                    className="mt-1 shrink-0 font-mono text-sm text-ink-muted transition-colors group-open:text-yellow"
                   >
-                    +
+                    <span className="faq-toggle-closed">[+]</span>
+                    <span className="faq-toggle-open">[–]</span>
                   </span>
                 </summary>
-                <p className="px-6 pb-6 text-sm leading-relaxed text-ink-muted">
+                <p className="mb-6 pl-12 text-sm leading-relaxed text-ink-muted sm:text-base">
                   {faq.a}
                 </p>
               </details>

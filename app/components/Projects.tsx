@@ -1,4 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
 import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
+import { springy } from "./motionPresets";
 
 type Project = {
   number: string;
@@ -40,26 +45,28 @@ const projects: Project[] = [
 
 export default function Projects() {
   return (
-    <section id="projects" className="bg-ink py-24 text-cream">
+    <section id="projects" className="relative bg-ink py-24 text-cream">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 -left-64 hidden w-64 bg-ink lg:block"
+      />
       <div className="mx-auto max-w-5xl px-6">
-        <Reveal>
-          <p className="mb-3 inline-block rounded-full border border-border-on-black px-4 py-1.5 font-mono text-sm tracking-widest text-yellow uppercase">
-            Selected work
-          </p>
-          <h2 className="font-display max-w-xl text-3xl font-bold tracking-tight sm:text-5xl">
-            Built to Ship, Made to Perform
-          </h2>
-          <p className="mt-4 max-w-xl text-cream/60">
-            Over six years I&apos;ve helped businesses turn ideas into
-            platforms that look and work exactly how they imagined. Here&apos;s
-            a look at some of that work.
-          </p>
-        </Reveal>
+        <SectionHeading
+          tone="dark"
+          eyebrow="Selected work"
+          title="Built to Ship, Made to Perform"
+          description="Over six years I've helped businesses turn ideas into platforms that look and work exactly how they imagined. Here's a look at some of that work."
+        />
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2">
           {projects.map((project, i) => (
             <Reveal key={project.number} delay={(i % 2) * 100}>
-              <article className="group flex h-full flex-col rounded-2xl border border-border-on-black bg-white/[0.03] p-8 transition-all hover:-translate-y-1 hover:border-yellow/50">
+              <motion.article
+                whileHover={{ y: -6 }}
+                whileTap={{ scale: 0.98 }}
+                transition={springy}
+                className="group flex h-full flex-col rounded-2xl border border-border-on-black bg-white/[0.03] p-8 transition-colors hover:border-yellow/50"
+              >
                 <div className="flex items-start justify-between">
                   <span className="rounded-full bg-white/10 px-3 py-1 font-mono text-sm text-cream/70">
                     {project.number}
@@ -85,7 +92,7 @@ export default function Projects() {
                     </li>
                   ))}
                 </ul>
-              </article>
+              </motion.article>
             </Reveal>
           ))}
         </div>

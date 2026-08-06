@@ -11,6 +11,20 @@ services:
       - "traefik.http.routers.portfolio.tls.certresolver=myresolver"
       - "traefik.http.services.portfolio.loadbalancer.server.port=80"
 
+  contact-api:
+    build: ./server/contact-api
+    restart: unless-stopped
+    env_file:
+      - ./server/contact-api/.env
+    networks:
+      - web
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.contact-api.rule=Host(`api.thiraj.space`)"
+      - "traefik.http.routers.contact-api.entrypoints=websecure"
+      - "traefik.http.routers.contact-api.tls.certresolver=myresolver"
+      - "traefik.http.services.contact-api.loadbalancer.server.port=3001"
+
 networks:
   web:
     external: true

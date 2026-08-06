@@ -1,4 +1,9 @@
+"use client";
+
+import { motion } from "motion/react";
 import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
+import { springy } from "./motionPresets";
 
 /**
  * PLACEHOLDER CONTENT — replace each entry with a real quote, name, role, and
@@ -31,21 +36,26 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="bg-ink py-24 text-cream">
+    <section id="testimonials" className="relative bg-ink py-24 text-cream">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-y-0 -left-64 hidden w-64 bg-ink lg:block"
+      />
       <div className="mx-auto max-w-5xl px-6">
-        <Reveal>
-          <p className="mb-3 inline-block rounded-full border border-border-on-black px-4 py-1.5 font-mono text-sm tracking-widest text-yellow uppercase">
-            Testimonials
-          </p>
-          <h2 className="font-display max-w-xl text-3xl font-bold tracking-tight sm:text-5xl">
-            From People I&apos;ve Worked With
-          </h2>
-        </Reveal>
+        <SectionHeading
+          tone="dark"
+          eyebrow="Testimonials"
+          title="From People I've Worked With"
+        />
 
         <div className="mt-16 grid gap-6 md:grid-cols-3">
           {testimonials.map((t, i) => (
             <Reveal key={i} delay={(i % 3) * 80}>
-              <figure className="flex h-full flex-col rounded-2xl border border-dashed border-border-on-black bg-white/[0.03] p-8">
+              <motion.figure
+                whileHover={{ y: -4 }}
+                transition={springy}
+                className="flex h-full flex-col rounded-2xl border border-dashed border-border-on-black bg-white/[0.03] p-8"
+              >
                 <h3 className="text-lg font-semibold text-cream/90">
                   {t.headline}
                 </h3>
@@ -56,7 +66,7 @@ export default function Testimonials() {
                   <div className="font-medium">{t.name}</div>
                   <div className="text-sm text-cream/50">{t.role}</div>
                 </figcaption>
-              </figure>
+              </motion.figure>
             </Reveal>
           ))}
         </div>

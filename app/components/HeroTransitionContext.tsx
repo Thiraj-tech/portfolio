@@ -3,58 +3,99 @@
 import {
   createContext,
   useContext,
-  useEffect,
   useRef,
-  useState,
   type ReactNode,
   type RefObject,
 } from "react";
-import { LayoutGroup, MotionConfig, useScroll, type MotionValue } from "motion/react";
+import {
+  animate,
+  LayoutGroup,
+  MotionConfig,
+  useMotionValue,
+  useMotionValueEvent,
+  useReducedMotion,
+  useScroll,
+  type MotionValue,
+} from "motion/react";
 
 type HeroTransitionValue = {
   heroRef: RefObject<HTMLElement | null>;
   aboutRef: RefObject<HTMLElement | null>;
-  pastHero: boolean;
   scrollYProgress: MotionValue<number>;
 };
 
 const HeroTransitionContext = createContext<HeroTransitionValue | null>(null);
 
+// The moment a downward scroll leaves Hero, snap straight to About's clean
+// view instead of drifting through the blend. Scrolling up is untouched
+// (free to return to Hero).
+const SNAP_TRIGGER_PROGRESS = 0.03;
+
 export function HeroTransitionProvider({ children }: { children: ReactNode }) {
   const heroRef = useRef<HTMLElement | null>(null);
   const aboutRef = useRef<HTMLElement | null>(null);
-  // Default to "at the hero" — matches how virtually every visit actually
-  // starts (top of page). Starting `true` here caused every layoutId
-  // element to mount once as the sidebar's version, then immediately
-  // unmount and remount as the hero's version a moment after hydration —
-  // too fast for Motion to capture the first render's rect, leaving those
-  // elements stuck invisible. The IntersectionObserver still corrects this
-  // instantly for the rare deep-link/restored-scroll case.
-  const [pastHero, setPastHero] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["end end", "end start"],
   });
 
-  useEffect(() => {
-    const hero = heroRef.current;
-    if (!hero) return;
+  const lastProgress = useRef(0);
+  const isSnapping = useRef(false);
+  const scrollAnim = useMotionValue(0);
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setPastHero(!entry.isIntersecting),
-      { threshold: 0.15 },
-    );
-    observer.observe(hero);
+  useMotionValueEvent(scrollYProgress, "change", (value) => {
+    if (isSnapping.current) return;
 
-    return () => observer.disconnect();
-  }, []);
+    const previous = lastProgress.current;
+    lastProgress.current = value;
+
+    const leavingHeroDownward =
+      value > previous && previous < SNAP_TRIGGER_PROGRESS && value >= SNAP_TRIGGER_PROGRESS;
+
+    if (leavingHeroDownward && value < 0.98 && aboutRef.current) {
+      const targetY =
+        window.scrollY + aboutRef.current.getBoundingClientRect().top;
+      isSnapping.current = true;
+
+      if (prefersReducedMotion) {
+        window.scrollTo({ top: targetY, behavior: "instant" });
+        isSnapping.current = false;
+        return;
+      }
+
+      // Lock out native wheel/touch scrolling for the duration of the snap —
+      // otherwise the user's still-active scroll gesture fights our
+      // onUpdate's window.scrollTo calls frame-by-frame.
+      const { style } = document.documentElement;
+      const previousOverflow = style.overflow;
+      style.overflow = "hidden";
+
+      scrollAnim.set(window.scrollY);
+      animate(scrollAnim, targetY, {
+        duration: 1.1,
+        ease: [0.22, 1, 0.36, 1],
+        // `behavior: "instant"` is required here — globals.css sets
+        // `scroll-behavior: smooth` on <html>, and without overriding it
+        // per-call, the browser's own smooth-scroll re-targets itself on
+        // every one of these onUpdate calls (60/sec), fighting our eased
+        // animation and producing the stutter/"stuck" feeling.
+        onUpdate: (latest) =>
+          window.scrollTo({ top: latest, behavior: "instant" }),
+        onComplete: () => {
+          style.overflow = previousOverflow;
+          isSnapping.current = false;
+        },
+      });
+    }
+  });
 
   return (
     <MotionConfig reducedMotion="user">
-      <LayoutGroup id="hero-morph">
+      <LayoutGroup id="site-nav">
         <HeroTransitionContext.Provider
-          value={{ heroRef, aboutRef, pastHero, scrollYProgress }}
+          value={{ heroRef, aboutRef, scrollYProgress }}
         >
           {children}
         </HeroTransitionContext.Provider>

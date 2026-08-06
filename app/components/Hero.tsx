@@ -1,27 +1,89 @@
 "use client";
 
+import { useEffect } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, useTransform } from "motion/react";
-import { navLinks } from "./navLinks";
+import {
+  animate,
+  motion,
+  useMotionValue,
+  useReducedMotion,
+  useTransform,
+} from "motion/react";
 import { useHeroTransition } from "./HeroTransitionContext";
+import { hoverLift, springy, tapScale } from "./motionPresets";
+import TopNav from "./TopNav";
 
 const traits = ["Creative", "Reliable", "Strategist", "Builder", "Efficient"];
-const leftNav = navLinks.slice(0, 2);
-const rightNav = navLinks.slice(2);
+
+const heroGroupVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.14, delayChildren: 0.1 } },
+};
+
+const heroItemVariants = {
+  hidden: { opacity: 0, y: 26 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 260, damping: 28 },
+  },
+};
+
+// Top-level load sequence: wordmark, then portrait, then everything else.
+const heroSequenceVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.4, delayChildren: 0.1 } },
+};
+
+const wordmarkVariants = {
+  hidden: { opacity: 0, top: "-6rem" },
+  show: {
+    opacity: 1,
+    top: "1rem",
+    transition: { type: "spring" as const, stiffness: 190, damping: 24 },
+  },
+};
+
+const photoVariants = {
+  hidden: { opacity: 0, y: 140 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { type: "spring" as const, stiffness: 170, damping: 22 },
+  },
+};
 
 export default function Hero() {
-  const { heroRef, pastHero, scrollYProgress } = useHeroTransition();
+  const { heroRef, scrollYProgress } = useHeroTransition();
   const prefersReducedMotion = useReducedMotion();
 
   const photoScale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
   const photoBlur = useTransform(scrollYProgress, (v) => `blur(${v * 28}px)`);
   const photoOpacity = useTransform(scrollYProgress, [0, 0.6, 1], [1, 0.5, 0]);
 
-  const wordmarkOpacity = useTransform(scrollYProgress, [0, 1], [0.7, 0]);
+  const wordmarkScrollOpacity = useTransform(scrollYProgress, [0, 1], [0.7, 0]);
   const wordmarkBlur = useTransform(
     scrollYProgress,
     (v) => `blur(${v * 20}px)`,
   );
+  const wordmarkEntrance = useMotionValue(0);
+  const wordmarkOpacity = useTransform(
+    () => wordmarkEntrance.get() * wordmarkScrollOpacity.get(),
+  );
+
+  useEffect(() => {
+    if (prefersReducedMotion) {
+      wordmarkEntrance.set(1);
+      return;
+    }
+    const controls = animate(wordmarkEntrance, 1, {
+      type: "spring",
+      stiffness: 190,
+      damping: 24,
+      delay: 0.1,
+    });
+    return () => controls.stop();
+  }, [prefersReducedMotion, wordmarkEntrance]);
 
   return (
     <section
@@ -31,18 +93,23 @@ export default function Hero() {
     >
       {/* ---------- Desktop: full-bleed cinematic hero ----------
           The section itself (not just its content) cancels the sidebar's
-          reserved column and bleeds to the full viewport width — doing the
-          bleed here, not on an inner div, keeps this section's own
-          overflow-hidden clip boundary aligned with that full-bleed edge,
-          so the in-hero nav row (which sits close to the left edge) isn't
-          clipped. The in-hero nav row, brand badge, LinkedIn icon, stat
-          cards, and "Hire Me" CTA share layoutIds with their Sidebar
-          counterparts (see Sidebar.tsx) — Framer Motion morphs them into
-          the fixed sidebar as the visitor scrolls past. */}
-      <div className="relative hidden min-h-[92vh] flex-col lg:flex">
+          reserved column and bleeds to the full viewport width. TopNav (an
+          inline, non-fixed navbar) covers navigation while the hero is on
+          screen and fades out on scroll; the fixed Sidebar (see
+          Sidebar.tsx) crossfades in as the About section comes into view,
+          so the two never overlap. */}
+      <motion.div
+        variants={heroSequenceVariants}
+        initial="hidden"
+        animate="show"
+        className="relative hidden h-screen flex-col lg:flex"
+      >
+        <TopNav />
+
         <motion.span
           aria-hidden
-          className="bg-wordmark top-4"
+          variants={wordmarkVariants}
+          className="bg-wordmark"
           style={
             prefersReducedMotion
               ? undefined
@@ -52,120 +119,66 @@ export default function Hero() {
           THIRAJ
         </motion.span>
 
-        {!pastHero && (
-          <nav className="relative z-40 flex items-center justify-between px-16 pt-10 text-sm font-semibold tracking-wide">
-            <div className="flex items-center gap-8">
-              <motion.a
-                layoutId="brand-badge"
-                href="#hero"
-                className="rounded-lg bg-yellow px-2 py-1 font-display text-sm font-bold tracking-tight text-ink"
-              >
-                THIRAJ
-              </motion.a>
-              <ul className="flex gap-8">
-                {leftNav.map((link) => (
-                  <li key={link.href}>
-                    <motion.a
-                      layoutId={`navlink-${link.href}`}
-                      href={link.href}
-                      className="transition-opacity hover:opacity-60"
-                    >
-                      {link.label}
-                    </motion.a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div className="flex items-center gap-8">
-              <ul className="flex gap-8">
-                {rightNav.map((link) => (
-                  <li key={link.href}>
-                    <motion.a
-                      layoutId={`navlink-${link.href}`}
-                      href={link.href}
-                      className="transition-opacity hover:opacity-60"
-                    >
-                      {link.label}
-                    </motion.a>
-                  </li>
-                ))}
-              </ul>
-              <motion.a
-                layoutId="linkedin-icon"
-                href="https://linkedin.com/in/thiraj"
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label="LinkedIn"
-                className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-cream transition-opacity hover:opacity-80"
-              >
-                <svg viewBox="0 0 24 24" className="h-4 w-4 fill-current">
-                  <path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.11 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.24h4.56V23H.22V8.24zM8.4 8.24h4.37v2.01h.06c.61-1.15 2.1-2.36 4.32-2.36 4.62 0 5.47 3.04 5.47 6.99V23h-4.56v-6.87c0-1.64-.03-3.75-2.29-3.75-2.29 0-2.64 1.79-2.64 3.63V23H8.4V8.24z" />
-                </svg>
-              </motion.a>
-            </div>
-          </nav>
-        )}
-
-        <div className="relative z-10 flex flex-1 items-end justify-center">
-          <motion.div
-            style={
-              prefersReducedMotion
-                ? { opacity: pastHero ? 0.3 : 1 }
-                : {
-                    scale: photoScale,
-                    filter: photoBlur,
-                    opacity: photoOpacity,
-                  }
-            }
-            className={
-              prefersReducedMotion
-                ? "transition-opacity duration-500"
-                : undefined
-            }
-          >
-            <Image
-              src="/portrait.png"
-              alt="Thiraj Hettiarachchi"
-              width={846}
-              height={914}
-              priority
-              className="relative z-10 h-[100vh] w-auto object-contain object-bottom"
-            />
+        <motion.div
+          variants={heroGroupVariants}
+          className="relative z-10 flex min-h-0 flex-1 items-end justify-center"
+        >
+          <motion.div variants={photoVariants} className="h-[130%]">
+            <motion.div
+              className="h-full"
+              style={{
+                y: 112,
+                ...(prefersReducedMotion
+                  ? {}
+                  : {
+                      scale: photoScale,
+                      filter: photoBlur,
+                      opacity: photoOpacity,
+                    }),
+              }}
+            >
+              <Image
+                src="/portrait.png"
+                alt="Thiraj Hettiarachchi"
+                width={846}
+                height={914}
+                priority
+                className="relative z-10 h-full w-auto object-contain object-bottom"
+              />
+            </motion.div>
           </motion.div>
 
-          {!pastHero && (
-            <div className="absolute bottom-28 left-16 z-40 flex flex-col gap-4">
-              <motion.div
-                layoutId="stat-projects"
-                className="flex items-center gap-3 rounded-2xl bg-cream-card/80 px-5 py-4 backdrop-blur-sm"
-              >
-                <span className="font-display text-3xl font-bold text-yellow">
-                  15+
-                </span>
-                <span className="text-sm leading-tight font-medium">
-                  Client
-                  <br />
-                  Projects
-                </span>
-              </motion.div>
-              <motion.div
-                layoutId="stat-years"
-                className="rounded-2xl bg-cream-card/80 px-5 py-4 text-center backdrop-blur-sm"
-              >
-                <div className="font-display text-3xl font-bold text-yellow">
-                  6+
-                </div>
-                <div className="text-sm font-medium">
-                  Years of
-                  <br />
-                  experience
-                </div>
-              </motion.div>
+          <motion.div
+            variants={heroItemVariants}
+            className="absolute bottom-28 left-16 z-40 flex flex-col gap-4"
+          >
+            <div className="flex items-center gap-3 rounded-2xl bg-cream-card/80 px-5 py-4 backdrop-blur-sm">
+              <span className="font-display text-3xl font-bold text-yellow">
+                15+
+              </span>
+              <span className="text-sm leading-tight font-medium">
+                Client
+                <br />
+                Projects
+              </span>
             </div>
-          )}
+            <div className="rounded-2xl bg-cream-card/80 px-5 py-4 text-center backdrop-blur-sm">
+              <div className="font-display text-3xl font-bold text-yellow">
+                6+
+              </div>
+              <div className="text-sm font-medium">
+                Years of
+                <br />
+                experience
+              </div>
+            </div>
+          </motion.div>
 
           {/* Trait tags, right */}
-          <ul className="absolute top-1/3 right-16 z-20 flex flex-col gap-3">
+          <motion.ul
+            variants={heroItemVariants}
+            className="absolute top-1/3 right-16 z-20 flex flex-col gap-3"
+          >
             {traits.map((trait) => (
               <li
                 key={trait}
@@ -175,47 +188,53 @@ export default function Hero() {
                 {trait}
               </li>
             ))}
-          </ul>
+          </motion.ul>
 
           {/* Headline + CTAs, overlapping the portrait */}
-          <div className="absolute inset-x-0 bottom-36 z-30 px-6 text-center">
+          <motion.div
+            variants={heroItemVariants}
+            className="absolute inset-x-0 bottom-0 z-30 px-6 text-center"
+          >
             <h1 className="font-display text-6xl leading-[0.95] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.45)] xl:text-7xl">
               Code, Applied
               <br />
               Differently.
             </h1>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
-              {!pastHero && (
-                <motion.a
-                  layoutId="cta-hire"
-                  href="#contact"
-                  className="rounded-full bg-yellow px-6 py-3 font-display font-bold text-ink transition-opacity hover:opacity-85"
-                >
-                  Hire Me for a Project
-                </motion.a>
-              )}
-              <a
+              <motion.a
+                whileHover={hoverLift}
+                whileTap={tapScale}
+                transition={springy}
+                href="#contact"
+                className="rounded-full bg-yellow px-6 py-3 font-display font-bold text-ink transition-opacity hover:opacity-85"
+              >
+                Hire Me for a Project
+              </motion.a>
+              <motion.a
+                whileHover={hoverLift}
+                whileTap={tapScale}
+                transition={springy}
                 href="#about"
                 className="rounded-full bg-yellow px-6 py-3 font-display font-bold text-ink transition-opacity hover:opacity-85"
               >
                 About Me
-              </a>
+              </motion.a>
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
-        <div className="relative z-20 flex items-end justify-between gap-6 px-16 pb-10">
-          <p className="text-lg font-medium">
-            The Full Stack Expert.
-            <br />
-            That&apos;s Thiraj.
-          </p>
+        <motion.div
+          variants={heroItemVariants}
+          className="relative z-20 flex items-end justify-between gap-6 px-16 pb-10"
+        >
+          <p className="text-lg font-medium">The Full Stack Engineer.</p>
           <p className="max-w-sm text-right text-ink-muted">
             Working closely with your team to ship platforms that merge
-            reliability, clean engineering, and long-term value.
+            reliability, clean engineering, and <br />
+            long-term value.
           </p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
       {/* ---------- Mobile / tablet: simple stacked hero ---------- */}
       <div className="px-6 pt-28 pb-16 lg:hidden">
@@ -227,7 +246,7 @@ export default function Hero() {
         <p className="mb-3 font-mono text-sm tracking-widest text-ink-muted uppercase">
           Full Stack Engineer. That&apos;s Thiraj.
         </p>
-        <h1 className="font-display text-5xl leading-[0.95] font-bold tracking-tight sm:text-6xl">
+        <h1 className="font-display text-5xl leading-[1.2] font-bold tracking-tight sm:text-6xl">
           Code, Applied
           <br />
           <span className="bg-yellow px-2">Differently.</span>
@@ -238,18 +257,22 @@ export default function Hero() {
         </p>
 
         <div className="mt-8 flex flex-wrap gap-4">
-          <a
+          <motion.a
+            whileTap={tapScale}
+            transition={springy}
             href="#contact"
             className="rounded-full bg-ink px-6 py-3 font-display font-bold text-cream transition-opacity hover:opacity-85"
           >
             Hire Me for a Project
-          </a>
-          <a
+          </motion.a>
+          <motion.a
+            whileTap={tapScale}
+            transition={springy}
             href="#projects"
             className="rounded-full border border-ink/20 px-6 py-3 font-display font-bold text-ink transition-colors hover:bg-cream-card"
           >
             View My Work
-          </a>
+          </motion.a>
         </div>
 
         <div className="relative mx-auto mt-10 w-full max-w-xs">

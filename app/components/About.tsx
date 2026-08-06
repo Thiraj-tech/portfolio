@@ -1,5 +1,11 @@
+"use client";
+
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import AboutScrollAnchor from "./AboutScrollAnchor";
+import MilestoneSpark from "./MilestoneSpark";
 import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
 
 type Milestone = {
   year: string;
@@ -74,52 +80,86 @@ const milestones: Milestone[] = [
 ];
 
 export default function About() {
+  const railRef = useRef<HTMLDivElement | null>(null);
+  const wordmarkRef = useRef<HTMLSpanElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const { scrollYProgress: railProgress } = useScroll({
+    target: railRef,
+    offset: ["start center", "end center"],
+  });
+
+  // Scroll-linked, not one-shot: scrolling down slides JOURNEY in from the
+  // right, scrolling back up slides it back out the same way it came.
+  // Tracked against the wordmark itself (not the section) so the slide
+  // finishes right as it actually scrolls into view, instead of drifting
+  // mid-animation — which is what was clipping the trailing "Y" against
+  // the section's overflow-hidden edge.
+  const { scrollYProgress: journeyProgress } = useScroll({
+    target: wordmarkRef,
+    offset: ["start end", "start center"],
+  });
+  const journeyX = useTransform(journeyProgress, [0, 1], [400, 0]);
+
   return (
-    <section id="about" className="relative overflow-hidden py-24">
+    <section
+      id="about"
+      className="relative overflow-hidden pt-[10px] pb-24"
+    >
       <AboutScrollAnchor />
-      <span aria-hidden className="bg-wordmark">
-        JOURNEY
-      </span>
 
       <div className="relative mx-auto max-w-5xl px-6">
-        <Reveal>
-          <p className="mb-3 inline-block rounded-full border border-ink/20 px-4 py-1.5 font-mono text-sm tracking-widest uppercase">
-            Start small, grow big
-          </p>
-          <h2 className="font-display max-w-xl text-3xl font-bold tracking-tight sm:text-5xl">
-            About Me (&amp;) My Journey
-          </h2>
-          <p className="mt-4 max-w-xl text-ink-muted">
-            Ten years ago I was fixing resort networks in Dubai. What happened
-            after that is easier to show than explain.
-          </p>
-        </Reveal>
+        <SectionHeading
+          eyebrow="Start small, grow big"
+          title="About Me (&) My Journey"
+          description="Ten years ago I was fixing resort networks in Dubai. What happened after that is easier to show than explain."
+        />
 
-        <div className="relative mt-20 pl-14 md:pl-0">
+        <motion.span
+          ref={wordmarkRef}
+          aria-hidden
+          style={{
+            position: "static",
+            display: "block",
+            width: "fit-content",
+            marginLeft: "auto",
+            x: prefersReducedMotion ? 0 : journeyX,
+          }}
+          className="bg-wordmark mt-6"
+        >
+          JOURNEY
+        </motion.span>
+
+        <div ref={railRef} className="relative mt-20 pl-14 md:pl-0">
           <div className="timeline-rail" aria-hidden />
+          <motion.div
+            className="timeline-progress"
+            style={{ scaleY: railProgress }}
+            aria-hidden
+          />
 
           <ol className="space-y-14">
             {milestones.map((m, i) => {
               const alignRight = i % 2 === 1;
               return (
                 <li key={m.year} className="relative">
-                  <span
-                    aria-hidden
-                    className="absolute top-2 -left-14 h-3 w-3 rounded-full bg-yellow ring-4 ring-cream md:top-8 md:left-1/2 md:-translate-x-1/2"
-                  />
+                  <MilestoneSpark className="absolute top-2 -left-14 h-3 w-3 md:top-8 md:left-1/2 md:-translate-x-1/2" />
                   <Reveal
                     delay={(i % 3) * 80}
                     className={`md:w-[46%] ${alignRight ? "md:ml-auto" : ""}`}
                   >
-                    <article className="rounded-2xl bg-cream-card p-6 transition-colors hover:bg-cream-card-2 sm:p-8">
+                    <article className="group rounded-2xl bg-cream-card p-6 transition-colors duration-300 hover:animate-electric-shock hover:bg-cream-card-2 sm:p-8">
                       <span className="font-display text-4xl font-bold text-yellow sm:text-5xl">
                         {m.year}
                       </span>
                       <h3 className="mt-2 text-xl font-semibold">{m.title}</h3>
                       <p className="mt-2 text-ink-muted">{m.summary}</p>
-                      <p className="mt-3 hidden text-sm text-ink-muted/80 sm:block">
-                        {m.detail}
-                      </p>
+                      <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">
+                        <div className="overflow-hidden">
+                          <p className="pt-3 text-sm text-ink-muted/80">
+                            {m.detail}
+                          </p>
+                        </div>
+                      </div>
                       <div className="mt-5 flex items-center gap-2 font-mono text-xs text-ink-muted">
                         <span className="rounded-full bg-ink px-2 py-1 text-cream">
                           {m.handle}

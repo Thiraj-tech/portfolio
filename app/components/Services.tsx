@@ -1,4 +1,10 @@
+"use client";
+
+import { useRef } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import Reveal from "./Reveal";
+import SectionHeading from "./SectionHeading";
+import { springy } from "./motionPresets";
 
 const services = [
   {
@@ -44,35 +50,57 @@ const skills: Record<string, string[]> = {
 };
 
 export default function Services() {
-  return (
-    <section id="services" className="relative overflow-hidden py-24">
-      <span aria-hidden className="bg-wordmark">
-        OFFER
-      </span>
+  const wordmarkRef = useRef<HTMLSpanElement | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
+  // Scroll-linked, not one-shot: scrolling down slides OFFER in from the
+  // right, scrolling back up slides it back out the same way it came.
+  // Tracked against the wordmark itself (not the section) so the slide
+  // finishes right as it actually scrolls into view.
+  const { scrollYProgress: wordmarkProgress } = useScroll({
+    target: wordmarkRef,
+    offset: ["start end", "start center"],
+  });
+  const wordmarkX = useTransform(wordmarkProgress, [0, 1], [400, 0]);
+
+  return (
+    <section id="services" className="relative overflow-hidden pt-[20px] pb-24">
       <div className="relative mx-auto max-w-5xl px-6">
-        <Reveal>
-          <p className="mb-3 inline-block rounded-full border border-ink/20 px-4 py-1.5 font-mono text-sm tracking-widest uppercase">
-            Capabilities overview
-          </p>
-          <h2 className="font-display max-w-xl text-3xl font-bold tracking-tight sm:text-5xl">
-            What You Get
-          </h2>
-          <p className="mt-4 max-w-xl text-ink-muted">
-            Strategy, precision, and development combined — turning your
-            vision into a digital experience that feels effortless.
-          </p>
-        </Reveal>
+        <SectionHeading
+          eyebrow="Capabilities overview"
+          title="What You Get"
+          description="Strategy, precision, and development combined — turning your vision into a digital experience that feels effortless."
+        />
+
+        <motion.span
+          ref={wordmarkRef}
+          aria-hidden
+          style={{
+            position: "static",
+            display: "block",
+            width: "fit-content",
+            marginLeft: "auto",
+            x: prefersReducedMotion ? 0 : wordmarkX,
+          }}
+          className="bg-wordmark mt-6"
+        >
+          OFFER
+        </motion.span>
 
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {services.map((service, i) => (
             <Reveal key={service.title} delay={(i % 3) * 80}>
-              <article className="h-full rounded-2xl bg-cream-card p-8 transition-colors hover:bg-cream-card-2">
+              <motion.article
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.98 }}
+                transition={springy}
+                className="h-full rounded-2xl bg-cream-card p-8 transition-colors hover:bg-cream-card-2"
+              >
                 <h3 className="text-lg font-semibold">{service.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-ink-muted">
                   {service.description}
                 </p>
-              </article>
+              </motion.article>
             </Reveal>
           ))}
         </div>

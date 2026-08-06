@@ -74,67 +74,16 @@ body {
   z-index: 0;
 }
 
-/* Scroll-reveal (applied by <Reveal>). Visible by default with zero JS —
-   the entrance motion below is a pure-CSS progressive enhancement that only
-   engages in browsers supporting scroll-driven animations, so content can
-   never get stuck invisible. */
-.reveal {
-  opacity: 1;
-  transform: none;
-}
-
-@supports (animation-timeline: view()) {
-  .reveal {
-    animation: reveal-in linear both;
-    animation-timeline: view();
-    animation-range: entry 0% cover 25%;
-  }
-
-  @keyframes reveal-in {
-    from {
-      opacity: 0;
-      transform: translateY(28px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-    }
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
   }
-  .reveal {
-    animation: none !important;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-  .animate-float,
-  .animate-float-slow,
   .animate-pulse-dot {
     animation: none;
   }
-}
-
-/* Floating shapes */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
+  .animate-electric-shock {
+    animation: none;
   }
-  50% {
-    transform: translateY(-14px);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-float-slow {
-  animation: float 9s ease-in-out infinite;
 }
 
 /* Availability pulsing dot */
@@ -152,9 +101,56 @@ body {
   animation: pulse-dot 2s ease-in-out infinite;
 }
 
-/* FAQ accordion chevron */
-details[open] .faq-chevron {
-  transform: rotate(45deg);
+/* Milestone card hover glow — quick flicker, then holds steady */
+@keyframes electric-shock {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 35, 0);
+  }
+  8% {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 35, 0.95),
+      0 0 20px 4px rgba(255, 255, 35, 0.65);
+  }
+  16% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 35, 0);
+  }
+  26% {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 35, 0.9),
+      0 0 26px 6px rgba(255, 255, 35, 0.7);
+  }
+  34% {
+    box-shadow:
+      0 0 0 1px rgba(255, 255, 35, 0.25),
+      0 0 6px 1px rgba(255, 255, 35, 0.25);
+  }
+  44% {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 35, 0.95),
+      0 0 22px 5px rgba(255, 255, 35, 0.6);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(255, 255, 35, 0.55),
+      0 0 30px 8px rgba(255, 255, 35, 0.35);
+  }
+}
+
+@utility animate-electric-shock {
+  animation: electric-shock 0.6s ease-out forwards;
+}
+
+/* FAQ accordion toggle glyph — [+] at rest, [–] once open */
+.faq-toggle-open {
+  display: none;
+}
+
+details[open] .faq-toggle-open {
+  display: inline;
+}
+
+details[open] .faq-toggle-closed {
+  display: none;
 }
 
 details > summary {
@@ -184,6 +180,24 @@ details > summary::-webkit-details-marker {
 
 @media (min-width: 768px) {
   .timeline-rail {
+    left: 50%;
+  }
+}
+
+/* Scroll-progress overlay on the timeline rail — solid fill that grows as
+   the visitor scrolls through the milestones (see About.tsx). */
+.timeline-progress {
+  position: absolute;
+  left: 28px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--yellow);
+  transform-origin: top;
+}
+
+@media (min-width: 768px) {
+  .timeline-progress {
     left: 50%;
   }
 }
