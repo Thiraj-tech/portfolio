@@ -64,7 +64,10 @@ export default function Services() {
   const wordmarkX = useTransform(wordmarkProgress, [0, 1], [400, 0]);
 
   return (
-    <section id="services" className="relative overflow-hidden pt-[20px] pb-24">
+    <section
+      id="services"
+      className="relative scroll-mt-16 overflow-hidden pt-[20px] pb-24 lg:scroll-mt-0"
+    >
       <div className="relative mx-auto max-w-5xl px-6">
         <SectionHeading
           eyebrow="Capabilities overview"

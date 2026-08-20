@@ -36,7 +36,10 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section id="testimonials" className="relative bg-ink py-24 text-cream">
+    <section
+      id="testimonials"
+      className="relative scroll-mt-16 bg-ink py-24 text-cream lg:scroll-mt-0"
+    >
       <div
         aria-hidden
         className="pointer-events-none absolute inset-y-0 -left-64 hidden w-64 bg-ink lg:block"

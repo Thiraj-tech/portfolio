@@ -103,7 +103,7 @@ export default function About() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden pt-[10px] pb-24"
+      className="relative scroll-mt-16 overflow-hidden pt-[10px] pb-24 lg:scroll-mt-0"
     >
       <AboutScrollAnchor />
 
@@ -147,13 +147,15 @@ export default function About() {
                     delay={(i % 3) * 80}
                     className={`md:w-[46%] ${alignRight ? "md:ml-auto" : ""}`}
                   >
-                    <article className="group rounded-2xl bg-cream-card p-6 transition-colors duration-300 hover:animate-electric-shock hover:bg-cream-card-2 sm:p-8">
-                      <span className="font-display text-4xl font-bold text-yellow sm:text-5xl">
-                        {m.year}
-                      </span>
-                      <h3 className="mt-2 text-xl font-semibold">{m.title}</h3>
-                      <p className="mt-2 text-ink-muted">{m.summary}</p>
-                      <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr]">
+                    <details className="group rounded-2xl bg-cream-card p-6 transition-colors duration-300 hover:animate-electric-shock hover:bg-cream-card-2 sm:p-8">
+                      <summary className="cursor-pointer list-none">
+                        <span className="font-display text-4xl font-bold text-yellow sm:text-5xl">
+                          {m.year}
+                        </span>
+                        <h3 className="mt-2 text-xl font-semibold">{m.title}</h3>
+                        <p className="mt-2 text-ink-muted">{m.summary}</p>
+                      </summary>
+                      <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] group-open:grid-rows-[1fr]">
                         <div className="overflow-hidden">
                           <p className="pt-3 text-sm text-ink-muted/80">
                             {m.detail}
@@ -166,7 +168,7 @@ export default function About() {
                         </span>
                         {m.time}
                       </div>
-                    </article>
+                    </details>
                   </Reveal>
                 </li>
               );

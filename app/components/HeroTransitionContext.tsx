@@ -3,6 +3,7 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useRef,
   type ReactNode,
   type RefObject,
@@ -44,6 +45,32 @@ export function HeroTransitionProvider({ children }: { children: ReactNode }) {
   const lastProgress = useRef(0);
   const isSnapping = useRef(false);
   const scrollAnim = useMotionValue(0);
+
+  // Clicking a nav link (`<a href="#...">`) starts the browser's own
+  // smooth-scroll to that section, which necessarily passes through the same
+  // "leaving Hero" scroll range the auto-snap below watches for. Without this
+  // guard, the snap fires mid-navigation and redirects the scroll to About
+  // regardless of which link was actually clicked — breaking every nav link
+  // that points past Hero.
+  useEffect(() => {
+    let releaseTimer: number | undefined;
+    const handleClick = (e: MouseEvent) => {
+      const anchor = (e.target as HTMLElement | null)?.closest?.(
+        'a[href^="#"]',
+      );
+      if (!anchor) return;
+      isSnapping.current = true;
+      window.clearTimeout(releaseTimer);
+      releaseTimer = window.setTimeout(() => {
+        isSnapping.current = false;
+      }, 1500);
+    };
+    document.addEventListener("click", handleClick);
+    return () => {
+      document.removeEventListener("click", handleClick);
+      window.clearTimeout(releaseTimer);
+    };
+  }, []);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     if (isSnapping.current) return;

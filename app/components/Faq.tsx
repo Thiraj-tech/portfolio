@@ -30,7 +30,7 @@ const faqs = [
 
 export default function Faq() {
   return (
-    <section id="faq" className="pt-[20px] pb-24">
+    <section id="faq" className="scroll-mt-16 pt-[20px] pb-24 lg:scroll-mt-0">
       <div className="mx-auto max-w-3xl px-6">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading eyebrow="FAQ" title="Got Any Questions?" />

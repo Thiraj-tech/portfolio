@@ -10,7 +10,7 @@ export default function HeroAmbientBackdrop() {
 
   const { scrollYProgress: aboutProgress } = useScroll({
     target: aboutRef,
-    offset: ["start start", "0.5 start"],
+    offset: ["start end", "start start"],
   });
 
   const opacity = useTransform(

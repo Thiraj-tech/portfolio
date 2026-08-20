@@ -172,11 +172,11 @@ export default function Sidebar() {
     <motion.aside
       style={{ opacity, filter }}
       inert={!interactive}
-      className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col gap-4 overflow-y-auto p-4 lg:flex"
+      className="fixed inset-y-0 left-0 z-50 hidden w-64 flex-col gap-2 overflow-hidden p-4 lg:flex"
     >
       <motion.div
         ref={profileRef}
-        className={`flex items-center justify-between rounded-2xl px-4 py-4 ${cardClass(darkMap.profile)}`}
+        className={`flex items-center justify-between rounded-2xl px-4 py-3 ${cardClass(darkMap.profile)}`}
       >
         <motion.a
           whileHover={hoverLift}
@@ -205,7 +205,7 @@ export default function Sidebar() {
 
       <motion.div
         ref={descriptionRef}
-        className={`rounded-2xl px-4 py-3 text-sm ${mutedClass(darkMap.description)} ${cardClass(darkMap.description)}`}
+        className={`rounded-2xl px-4 py-2 text-sm ${mutedClass(darkMap.description)} ${cardClass(darkMap.description)}`}
       >
         Full stack engineer shipping production e-commerce platforms with
         clean, reliable code.
@@ -214,14 +214,14 @@ export default function Sidebar() {
       <motion.div className="flex items-center gap-2">
         <div
           ref={stat1Ref}
-          className={`flex-1 rounded-2xl py-4 text-center ${cardClass(darkMap.stat1)}`}
+          className={`flex-1 rounded-2xl py-3 text-center ${cardClass(darkMap.stat1)}`}
         >
           <div className="font-display text-2xl font-bold text-yellow">6+</div>
           <div className={`text-xs ${mutedClass(darkMap.stat1)}`}>Years exp.</div>
         </div>
         <div
           ref={stat2Ref}
-          className={`flex-1 rounded-2xl py-4 text-center ${cardClass(darkMap.stat2)}`}
+          className={`flex-1 rounded-2xl py-3 text-center ${cardClass(darkMap.stat2)}`}
         >
           <div className="font-display text-2xl font-bold text-yellow">
             15+
@@ -232,7 +232,7 @@ export default function Sidebar() {
 
       <motion.nav
         ref={navRef}
-        className={`flex flex-1 flex-col gap-1 rounded-2xl p-2 ${cardClass(darkMap.nav)}`}
+        className={`flex flex-col gap-1 rounded-2xl p-2 ${cardClass(darkMap.nav)}`}
       >
         {navLinks.map((link) => {
           const isActive = active === link.href;
@@ -240,7 +240,7 @@ export default function Sidebar() {
             <a
               key={link.href}
               href={link.href}
-              className={`relative rounded-xl px-4 py-3 text-sm font-medium transition-colors duration-500 ${
+              className={`relative rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-500 ${
                 isActive ? "text-ink" : navInactiveClass(darkMap.nav)
               }`}
             >
@@ -264,9 +264,9 @@ export default function Sidebar() {
         transition={springy}
         type="button"
         onClick={copyEmail}
-        className={`flex items-center justify-between rounded-2xl px-4 py-3 text-left text-sm ${cardClass(darkMap.email)} ${mutedClass(darkMap.email)} ${emailHoverClass(darkMap.email)}`}
+        className={`flex items-center justify-between rounded-2xl px-4 py-2 text-left text-sm ${cardClass(darkMap.email)} ${mutedClass(darkMap.email)} ${emailHoverClass(darkMap.email)}`}
       >
-        <span>thiraj.hettiarachchi@gmail.com</span>
+        <span className="min-w-0 flex-1 truncate">thiraj.hettiarachchi@gmail.com</span>
         <span className="ml-2 shrink-0 font-mono text-xs">
           {copied ? "Copied" : "Copy"}
         </span>
@@ -277,7 +277,7 @@ export default function Sidebar() {
         whileTap={tapScale}
         transition={springy}
         href="#contact"
-        className="rounded-2xl bg-yellow py-4 text-center font-display font-bold text-ink"
+        className="rounded-2xl bg-yellow py-3 text-center font-display font-bold text-ink"
       >
         Hire Me
       </motion.a>

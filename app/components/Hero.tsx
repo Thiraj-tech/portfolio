@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 import { useHeroTransition } from "./HeroTransitionContext";
 import { hoverLift, springy, tapScale } from "./motionPresets";
+import Reveal from "./Reveal";
 import TopNav from "./TopNav";
 
 const traits = ["Creative", "Reliable", "Strategist", "Builder", "Efficient"];
@@ -236,81 +237,116 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* ---------- Mobile / tablet: simple stacked hero ---------- */}
-      <div className="px-6 pt-28 pb-16 lg:hidden">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-sm text-ink-muted">
-          <span className="animate-pulse-dot h-2 w-2 rounded-full bg-green-600" />
-          Available for freelance &amp; open to full-time roles
+      {/* ---------- Mobile / tablet: cinematic stacked hero ----------
+          Fills the screen (minus the fixed 4rem header) on load, like the
+          desktop h-screen hero — dvh so it adapts fluidly as the viewport
+          resizes rather than locking to a stale px height. */}
+      <div className="flex min-h-[calc(100dvh-4rem)] flex-col pt-10 lg:hidden">
+        <div className="px-6">
+          <Reveal>
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-sm text-ink-muted">
+              <span className="animate-pulse-dot h-2 w-2 rounded-full bg-green-600" />
+              Available for freelance &amp; open to full-time roles
+            </div>
+          </Reveal>
+
+          <Reveal delay={80}>
+            <p className="mb-3 font-mono text-sm tracking-widest text-ink-muted uppercase">
+              Full Stack Engineer. That&apos;s Thiraj.
+            </p>
+          </Reveal>
         </div>
 
-        <p className="mb-3 font-mono text-sm tracking-widest text-ink-muted uppercase">
-          Full Stack Engineer. That&apos;s Thiraj.
-        </p>
-        <h1 className="font-display text-5xl leading-[1.2] font-bold tracking-tight sm:text-6xl">
-          Code, Applied
-          <br />
-          <span className="bg-yellow px-2">Differently.</span>
-        </h1>
-        <p className="mt-6 max-w-lg text-lg text-ink-muted">
-          6+ years shipping production e-commerce platforms — Laravel, React,
-          Python — handling up to $2M in monthly transaction volume.
-        </p>
-
-        <div className="mt-8 flex flex-wrap gap-4">
-          <motion.a
-            whileTap={tapScale}
-            transition={springy}
-            href="#contact"
-            className="rounded-full bg-ink px-6 py-3 font-display font-bold text-cream transition-opacity hover:opacity-85"
-          >
-            Hire Me for a Project
-          </motion.a>
-          <motion.a
-            whileTap={tapScale}
-            transition={springy}
-            href="#projects"
-            className="rounded-full border border-ink/20 px-6 py-3 font-display font-bold text-ink transition-colors hover:bg-cream-card"
-          >
-            View My Work
-          </motion.a>
-        </div>
-
-        <div className="relative mx-auto mt-10 w-full max-w-xs">
+        {/* Photo as the hero moment — full-bleed, headline + bio + CTAs all
+            overlaid at the base, mirroring the desktop's cinematic
+            photo-first treatment. flex-1 instead of a fixed aspect ratio so
+            it stretches to fill whatever room is left below the badge and
+            its bottom edge lands flush with the screen edge. */}
+        <Reveal delay={140} className="relative mt-4 min-h-0 flex-1 overflow-hidden">
           <Image
             src="/portrait.png"
             alt="Thiraj Hettiarachchi"
-            width={846}
-            height={914}
+            fill
             priority
-            className="relative mx-auto h-auto w-full max-w-[280px] object-contain"
+            sizes="100vw"
+            className="object-cover object-top"
           />
-        </div>
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-8">
+            <h1 className="font-display text-5xl leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] sm:text-6xl">
+              Code, Applied
+              <br />
+              <span className="bg-yellow px-2 text-ink">Differently.</span>
+            </h1>
 
-        <dl className="mt-10 flex flex-wrap gap-x-12 gap-y-4 border-t border-ink/10 pt-8">
-          <div>
-            <dt className="text-sm text-ink-muted">Years of experience</dt>
-            <dd className="font-display text-3xl font-bold">6+</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-ink-muted">Client projects</dt>
-            <dd className="font-display text-3xl font-bold">15+</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-ink-muted">Monthly volume</dt>
-            <dd className="font-display text-3xl font-bold">$2M+</dd>
-          </div>
-        </dl>
+            <p className="mt-4 max-w-lg text-lg text-cream/70">
+              6+ years shipping production e-commerce platforms — Laravel,
+              React, Python — handling up to $2M in monthly transaction
+              volume.
+            </p>
 
-        <ul className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-3">
-          {traits.map((trait) => (
-            <li
-              key={trait}
-              className="font-mono text-sm tracking-widest text-ink-muted uppercase"
-            >
-              {trait}
-            </li>
-          ))}
-        </ul>
+            <div className="mt-6 flex flex-nowrap gap-3">
+              <motion.a
+                whileTap={tapScale}
+                transition={springy}
+                href="#contact"
+                className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
+              >
+                Hire Me for a Project
+              </motion.a>
+              <motion.a
+                whileTap={tapScale}
+                transition={springy}
+                href="#projects"
+                className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
+              >
+                View My Work
+              </motion.a>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+
+      <div className="px-6 pb-16 lg:hidden">
+        <Reveal delay={300}>
+          <div className="mt-12 grid grid-cols-3 gap-3 border-t border-ink/10 pt-8">
+            <div className="rounded-2xl bg-cream-card py-4 text-center">
+              <div className="font-display text-2xl font-bold text-yellow">
+                6+
+              </div>
+              <div className="mt-1 text-xs text-ink-muted">Years exp.</div>
+            </div>
+            <div className="rounded-2xl bg-cream-card py-4 text-center">
+              <div className="font-display text-2xl font-bold text-yellow">
+                15+
+              </div>
+              <div className="mt-1 text-xs text-ink-muted">Projects</div>
+            </div>
+            <div className="rounded-2xl bg-cream-card py-4 text-center">
+              <div className="font-display text-2xl font-bold text-yellow">
+                $2M+
+              </div>
+              <div className="mt-1 text-xs text-ink-muted">Volume</div>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={380}>
+          <ul className="mt-6 flex flex-wrap gap-2">
+            {traits.map((trait) => (
+              <li
+                key={trait}
+                className="flex items-center gap-2 rounded-full bg-cream-card px-4 py-2 text-sm font-semibold"
+              >
+                <span aria-hidden className="h-2 w-2 rounded-sm bg-yellow" />
+                {trait}
+              </li>
+            ))}
+          </ul>
+        </Reveal>
       </div>
     </section>
   );
