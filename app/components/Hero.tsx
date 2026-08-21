@@ -262,7 +262,7 @@ export default function Hero() {
             photo-first treatment. flex-1 instead of a fixed aspect ratio so
             it stretches to fill whatever room is left below the badge and
             its bottom edge lands flush with the screen edge. */}
-        <Reveal delay={140} className="relative mt-4 min-h-[30rem] flex-1 overflow-hidden bg-ink">
+        <Reveal delay={140} className="relative mt-4 min-h-0 flex-1 overflow-hidden">
           <Image
             src="/portrait.png"
             alt="Thiraj Hettiarachchi"
