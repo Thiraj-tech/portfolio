@@ -7,6 +7,7 @@ import { springy, tapScale } from "./motionPresets";
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+  const closeMenu = () => setTimeout(() => setOpen(false), 0);
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 lg:hidden">
@@ -51,7 +52,7 @@ export default function MobileNav() {
                 <a
                   href={link.href}
                   className="block rounded-xl px-4 py-3 text-lg text-ink-muted transition-colors hover:bg-cream-card hover:text-ink"
-                  onClick={() => setOpen(false)}
+                  onClick={closeMenu}
                 >
                   {link.label}
                 </a>
@@ -63,7 +64,7 @@ export default function MobileNav() {
                 transition={springy}
                 href="#contact"
                 className="mt-2 block rounded-xl bg-yellow px-4 py-3 text-center font-display font-bold text-ink"
-                onClick={() => setOpen(false)}
+                onClick={closeMenu}
               >
                 Hire Me
               </motion.a>

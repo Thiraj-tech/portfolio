@@ -46,12 +46,16 @@ export function HeroTransitionProvider({ children }: { children: ReactNode }) {
   const isSnapping = useRef(false);
   const scrollAnim = useMotionValue(0);
 
-  // Clicking a nav link (`<a href="#...">`) starts the browser's own
-  // smooth-scroll to that section, which necessarily passes through the same
-  // "leaving Hero" scroll range the auto-snap below watches for. Without this
-  // guard, the snap fires mid-navigation and redirects the scroll to About
-  // regardless of which link was actually clicked — breaking every nav link
-  // that points past Hero.
+  // Native `<a href="#...">` clicks don't reliably scroll on this page —
+  // globals.css's `scroll-behavior: smooth` on <html> combined with any
+  // smooth scroll (native anchor navigation, `scrollIntoView`, even a plain
+  // `window.scrollTo`) tends to get interrupted and freeze mid-animation
+  // (same class of fight the snap effect below already routes around with
+  // `behavior: "instant"` onUpdate calls). So every nav link is driven from
+  // here with that same instant-per-frame technique instead of the browser
+  // default, which also lets us guard the auto-snap below: it fires
+  // mid-navigation and redirects the scroll to About regardless of which
+  // link was actually clicked otherwise.
   useEffect(() => {
     let releaseTimer: number | undefined;
     const handleClick = (e: MouseEvent) => {
@@ -59,21 +63,52 @@ export function HeroTransitionProvider({ children }: { children: ReactNode }) {
         'a[href^="#"]',
       );
       if (!anchor) return;
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey)
+        return;
+      const hash = anchor.getAttribute("href");
+      if (!hash || hash === "#") return;
+      const target = document.querySelector(hash);
+      if (!target) return;
+
+      e.preventDefault();
       isSnapping.current = true;
       window.clearTimeout(releaseTimer);
       releaseTimer = window.setTimeout(() => {
         isSnapping.current = false;
       }, 1500);
+
+      const scrollMarginTop =
+        parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+      const targetY =
+        window.scrollY + target.getBoundingClientRect().top - scrollMarginTop;
+      window.history.pushState(null, "", hash);
+
+      if (prefersReducedMotion) {
+        window.scrollTo({ top: targetY, behavior: "instant" });
+        return;
+      }
+
+      scrollAnim.set(window.scrollY);
+      animate(scrollAnim, targetY, {
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+        onUpdate: (latest) =>
+          window.scrollTo({ top: latest, behavior: "instant" }),
+      });
     };
     document.addEventListener("click", handleClick);
     return () => {
       document.removeEventListener("click", handleClick);
       window.clearTimeout(releaseTimer);
     };
-  }, []);
+  }, [prefersReducedMotion, scrollAnim]);
 
   useMotionValueEvent(scrollYProgress, "change", (value) => {
     if (isSnapping.current) return;
+    // Below lg, Hero is a normal-flow stack shorter than the viewport
+    // instead of h-screen, so this offset math starts past the snap
+    // threshold on mount and would yank the page into About immediately.
+    if (typeof window !== "undefined" && window.innerWidth < 1024) return;
 
     const previous = lastProgress.current;
     lastProgress.current = value;
