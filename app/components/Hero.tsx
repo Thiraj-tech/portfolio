@@ -257,29 +257,25 @@ export default function Hero() {
           </Reveal>
         </div>
 
-        {/* Photo as the hero moment, headline overlapping its base — mirrors
-            the desktop's cinematic photo-first treatment. The image sits in
-            a fixed aspect-ratio box so its crop stays constant no matter how
-            tall the text below ends up; the text block flows normally
-            (pulled up over the photo's bottom edge with a negative margin)
-            instead of being absolutely positioned, so it can never get
-            clipped — it just pushes the section taller when it needs to. */}
-        <Reveal delay={140} className="relative mt-4 overflow-hidden bg-ink">
-          <div className="relative aspect-[4/5] w-full">
-            <Image
-              src="/portrait.png"
-              alt="Thiraj Hettiarachchi"
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover object-top"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-t from-ink via-ink/20 to-transparent"
-            />
-          </div>
-          <div className="relative -mt-24 px-6 pb-8">
+        {/* Photo as the hero moment — full-bleed, headline + bio + CTAs all
+            overlaid at the base, mirroring the desktop's cinematic
+            photo-first treatment. flex-1 instead of a fixed aspect ratio so
+            it stretches to fill whatever room is left below the badge and
+            its bottom edge lands flush with the screen edge. */}
+        <Reveal delay={140} className="relative mt-4 min-h-[30rem] flex-1 overflow-hidden bg-ink">
+          <Image
+            src="/portrait.png"
+            alt="Thiraj Hettiarachchi"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-top"
+          />
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent"
+          />
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-8">
             <h1 className="font-display text-5xl leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] sm:text-6xl">
               Code, Applied
               <br />
