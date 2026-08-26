@@ -241,51 +241,57 @@ export default function Hero() {
           Fills the screen (minus the fixed 4rem header) on load, like the
           desktop h-screen hero — dvh so it adapts fluidly as the viewport
           resizes rather than locking to a stale px height. */}
-      <div className="flex min-h-[calc(100dvh-4rem)] flex-col pt-10 lg:hidden">
-        <div className="px-6">
+      <div className="flex min-h-[calc(100dvh-4rem)] flex-col lg:hidden">
+        <div className="px-6 text-center">
           <Reveal>
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-sm text-ink-muted">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-xs text-ink-muted">
               <span className="animate-pulse-dot h-2 w-2 rounded-full bg-green-600" />
-              Available for freelance &amp; open to full-time roles
+              Available for freelance &amp; full-time roles
             </div>
           </Reveal>
 
           <Reveal delay={80}>
-            <p className="mb-3 font-mono text-sm tracking-widest text-ink-muted uppercase">
-              Full Stack Engineer. That&apos;s Thiraj.
+            <p className="font-mono text-sm tracking-widest text-ink-muted uppercase text-center">
+              Full Stack Engineer. Based in Sri Lanka.
             </p>
           </Reveal>
         </div>
 
-        {/* Photo as the hero moment — full-bleed, headline + bio + CTAs all
-            overlaid at the base, mirroring the desktop's cinematic
-            photo-first treatment. flex-1 instead of a fixed aspect ratio so
-            it stretches to fill whatever room is left below the badge and
-            its bottom edge lands flush with the screen edge. */}
-        <Reveal delay={140} className="relative mt-4 min-h-0 flex-1 overflow-hidden">
+        {/* Photo as the hero moment — full-bleed, headline + bio + CTAs at
+            the base, mirroring the desktop's cinematic photo-first
+            treatment. The text block sits in normal flow (justify-end column)
+            rather than absolutely positioned, so the box can never be
+            shorter than its content — on small screens it grows and scrolls
+            past the fold instead of clipping, while flex-1 still stretches
+            it to fill the viewport on taller phones. The content's pt-36
+            reserves a photo-only band above the text so the portrait stays
+            visible even when content height wins. */}
+        <Reveal
+          delay={140}
+          className="relative mt-4 flex flex-1 flex-col justify-end overflow-hidden"
+        >
           <Image
             src="/portrait.png"
             alt="Thiraj Hettiarachchi"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-top"
+            className="object-cover object-[calc(50%_+_25px)_top]"
           />
           <div
             aria-hidden
             className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent"
           />
-          <div className="absolute inset-x-0 bottom-0 px-6 pb-8">
-            <h1 className="font-display text-5xl leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] sm:text-6xl">
+          <div className="relative z-10 px-6 pt-36 pb-8">
+            <h1 className="font-display text-[clamp(2.5rem,12.5vw,3rem)] leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] sm:text-6xl">
               Code, Applied
               <br />
               <span className="bg-yellow px-2 text-ink">Differently.</span>
             </h1>
 
-            <p className="mt-4 max-w-lg text-lg text-cream/70">
-              6+ years shipping production e-commerce platforms — Laravel,
-              React, Python — handling up to $2M in monthly transaction
-              volume.
+            <p className="mt-4 max-w-lg text-base text-cream/70 sm:text-lg">
+              6+ years shipping production e-commerce platforms: Laravel, React,
+              Python — handling up to $2M in monthly transaction volume.
             </p>
 
             <div className="mt-6 flex flex-nowrap gap-3">
@@ -295,7 +301,7 @@ export default function Hero() {
                 href="#contact"
                 className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
               >
-                Hire Me for a Project
+                Hire Me
               </motion.a>
               <motion.a
                 whileTap={tapScale}
@@ -303,7 +309,7 @@ export default function Hero() {
                 href="#projects"
                 className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
               >
-                View My Work
+                My Work
               </motion.a>
             </div>
           </div>
