@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, type FormEvent } from "react";
+import AdminLoginForm from "../components/AdminLoginForm";
 import Avatar from "../components/Avatar";
 import Stars from "../components/Stars";
 import { supabase } from "../lib/supabaseClient";
@@ -25,71 +26,6 @@ type PendingReview = {
 
 const fieldClass =
   "w-full rounded-xl border border-border-on-black bg-white/[0.04] px-4 py-2.5 text-sm text-cream placeholder:text-cream/30 transition-colors focus:border-yellow focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow/70";
-
-function LoginForm({ onLoggedIn }: { onLoggedIn: () => void }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setError(null);
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-    setSubmitting(false);
-    if (authError) {
-      setError("Invalid email or password.");
-      return;
-    }
-    onLoggedIn();
-  };
-
-  return (
-    <form
-      onSubmit={handleSubmit}
-      className="mx-auto mt-6 max-w-sm space-y-4 text-left"
-    >
-      <div>
-        <label htmlFor="admin-email" className="mb-1.5 block text-sm text-cream/70">
-          Email
-        </label>
-        <input
-          id="admin-email"
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={fieldClass}
-        />
-      </div>
-      <div>
-        <label htmlFor="admin-password" className="mb-1.5 block text-sm text-cream/70">
-          Password
-        </label>
-        <input
-          id="admin-password"
-          type="password"
-          required
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className={fieldClass}
-        />
-      </div>
-      {error && <p className="text-sm text-red-400">{error}</p>}
-      <button
-        type="submit"
-        disabled={submitting}
-        className="w-full rounded-full bg-yellow px-6 py-2.5 font-display font-bold text-ink transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-60"
-      >
-        {submitting ? "Signing in…" : "Sign in"}
-      </button>
-    </form>
-  );
-}
 
 function GenerateLink({ onCreated }: { onCreated: (r: ReviewRequest) => void }) {
   const [clientName, setClientName] = useState("");
@@ -200,14 +136,22 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-ink px-6 py-16 text-cream">
       <div className="mx-auto max-w-3xl">
-        <h1 className="font-display text-3xl font-bold">Review Admin</h1>
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="font-display text-3xl font-bold">Review Admin</h1>
+          <a
+            href="/admin/projects/"
+            className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
+          >
+            Manage projects →
+          </a>
+        </div>
 
         {authStage === "checking" && (
           <p className="mt-6 text-cream/60">Checking session…</p>
         )}
 
         {authStage === "loggedOut" && (
-          <LoginForm
+          <AdminLoginForm
             onLoggedIn={() => {
               setAuthStage("loggedIn");
               loadData();

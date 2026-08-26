@@ -1,7 +1,12 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import AboutScrollAnchor from "./AboutScrollAnchor";
 import MilestoneSpark from "./MilestoneSpark";
 import Reveal from "./Reveal";
@@ -33,7 +38,7 @@ const milestones: Milestone[] = [
     summary:
       "Joined WebTechno remotely and went from support tickets to shipping real client work.",
     detail:
-      "Custom themes and plugins across WordPress, Shopify, Wix, Squarespace, and GoDaddy for international clients. 15+ projects delivered end to end, from requirements to launch and support.",
+      "Custom themes and plugins across WordPress, Shopify, Wix, Squarespace, and GoDaddy for international clients. 100+ projects delivered end to end, from requirements to launch and support.",
     handle: "@webtechno",
     time: "7 years ago",
   },
@@ -152,7 +157,9 @@ export default function About() {
                         <span className="font-display text-4xl font-bold text-yellow sm:text-5xl">
                           {m.year}
                         </span>
-                        <h3 className="mt-2 text-xl font-semibold">{m.title}</h3>
+                        <h3 className="mt-2 text-xl font-semibold">
+                          {m.title}
+                        </h3>
                         <p className="mt-2 text-ink-muted">{m.summary}</p>
                       </summary>
                       <div className="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-hover:grid-rows-[1fr] group-open:grid-rows-[1fr]">

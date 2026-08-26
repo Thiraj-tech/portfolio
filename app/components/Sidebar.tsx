@@ -1,7 +1,12 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { motion, useMotionValueEvent, useScroll, useTransform } from "motion/react";
+import {
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useTransform,
+} from "motion/react";
 import { navLinks } from "./navLinks";
 import { hoverLift, springy, tapScale } from "./motionPresets";
 import { useHeroTransition } from "./HeroTransitionContext";
@@ -132,9 +137,23 @@ export default function Sidebar() {
     check();
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onResize);
+
+    // Dark sections like Projects/Testimonials render empty (zero height, or
+    // absent entirely) until their Supabase fetch resolves, then pop in at
+    // full height — which silently invalidates the bounds captured above.
+    // Recompute whenever the page's total height actually changes, so a
+    // card's dark/light state never gets stuck reading a stale section
+    // position from before the content loaded.
+    const resizeObserver = new ResizeObserver(() => {
+      computeBounds();
+      check();
+    });
+    resizeObserver.observe(document.body);
+
     return () => {
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", onResize);
+      resizeObserver.disconnect();
     };
   }, []);
 
@@ -150,13 +169,16 @@ export default function Sidebar() {
     "border transition-[background-color,border-color,backdrop-filter,box-shadow,color] duration-500 ease-out";
   const glassCardClass = `${cardTransition} border-white/15 bg-white/10 shadow-[0_10px_30px_-12px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.1)] backdrop-blur-xl backdrop-saturate-150`;
   const solidCardClass = `${cardTransition} border-transparent bg-cream-card shadow-[0_10px_30px_-12px_rgba(0,0,0,0),inset_0_1px_0_rgba(255,255,255,0)]`;
-  const cardClass = (isDark: boolean) => (isDark ? glassCardClass : solidCardClass);
-  const mutedClass = (isDark: boolean) => (isDark ? "text-cream/60" : "text-ink-muted");
+  const cardClass = (isDark: boolean) =>
+    isDark ? glassCardClass : solidCardClass;
+  const mutedClass = (isDark: boolean) =>
+    isDark ? "text-cream/60" : "text-ink-muted";
   const navInactiveClass = (isDark: boolean) =>
     isDark
       ? "text-cream/60 hover:bg-white/10 hover:text-cream"
       : "text-ink-muted hover:bg-cream-card-2 hover:text-ink";
-  const emailHoverClass = (isDark: boolean) => (isDark ? "hover:text-cream" : "hover:text-ink");
+  const emailHoverClass = (isDark: boolean) =>
+    isDark ? "hover:text-cream" : "hover:text-ink";
 
   const copyEmail = async () => {
     try {
@@ -207,8 +229,8 @@ export default function Sidebar() {
         ref={descriptionRef}
         className={`rounded-2xl px-4 py-2 text-sm ${mutedClass(darkMap.description)} ${cardClass(darkMap.description)}`}
       >
-        Full stack engineer shipping production e-commerce platforms with
-        clean, reliable code.
+        Full stack engineer shipping production e-commerce platforms with clean,
+        reliable code.
       </motion.div>
 
       <motion.div className="flex items-center gap-2">
@@ -217,14 +239,16 @@ export default function Sidebar() {
           className={`flex-1 rounded-2xl py-3 text-center ${cardClass(darkMap.stat1)}`}
         >
           <div className="font-display text-2xl font-bold text-yellow">6+</div>
-          <div className={`text-xs ${mutedClass(darkMap.stat1)}`}>Years exp.</div>
+          <div className={`text-xs ${mutedClass(darkMap.stat1)}`}>
+            Years exp.
+          </div>
         </div>
         <div
           ref={stat2Ref}
           className={`flex-1 rounded-2xl py-3 text-center ${cardClass(darkMap.stat2)}`}
         >
           <div className="font-display text-2xl font-bold text-yellow">
-            15+
+            100+
           </div>
           <div className={`text-xs ${mutedClass(darkMap.stat2)}`}>Projects</div>
         </div>
@@ -266,7 +290,9 @@ export default function Sidebar() {
         onClick={copyEmail}
         className={`flex items-center justify-between rounded-2xl px-4 py-2 text-left text-sm ${cardClass(darkMap.email)} ${mutedClass(darkMap.email)} ${emailHoverClass(darkMap.email)}`}
       >
-        <span className="min-w-0 flex-1 truncate">thiraj.hettiarachchi@gmail.com</span>
+        <span className="min-w-0 flex-1 truncate">
+          thiraj.hettiarachchi@gmail.com
+        </span>
         <span className="ml-2 shrink-0 font-mono text-xs">
           {copied ? "Copied" : "Copy"}
         </span>
