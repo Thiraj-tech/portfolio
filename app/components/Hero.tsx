@@ -237,34 +237,32 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* ---------- Mobile / tablet hero ----------
-          Small edge-to-edge photo, then the headline pulled up with a
-          negative margin so it overlaps the photo's lower (chest) band —
-          NOT absolutely positioned inside the photo's overflow-hidden box,
-          so it can never be silently clipped the way earlier iterations
-          were: worst case it just overlaps a little less than intended.
-          Description + CTAs stay in plain flow below, untouched by the
-          overlap. */}
-      <div className="lg:hidden sm:mx-auto sm:max-w-md">
+      {/* ---------- Mobile / tablet: cinematic stacked hero ----------
+          Fills the screen (minus the fixed 4rem header) on load, like the
+          desktop h-screen hero — dvh so it adapts fluidly as the viewport
+          resizes rather than locking to a stale px height. */}
+      <div className="flex min-h-[calc(100dvh-4rem)] flex-col pt-10 lg:hidden">
         <div className="px-6">
           <Reveal>
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-sm text-ink-muted">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-border-soft bg-cream-card px-4 py-1.5 text-sm text-ink-muted">
               <span className="animate-pulse-dot h-2 w-2 rounded-full bg-green-600" />
-              Available for freelance &amp; full-time roles
+              Available for freelance &amp; open to full-time roles
             </div>
           </Reveal>
 
           <Reveal delay={80}>
-            <p className="text-center font-mono text-sm tracking-widest text-ink-muted uppercase">
-              Full Stack Engineer From Sri Lanka.
+            <p className="mb-3 font-mono text-sm tracking-widest text-ink-muted uppercase">
+              Full Stack Engineer. That&apos;s Thiraj.
             </p>
           </Reveal>
         </div>
 
-        <Reveal
-          delay={140}
-          className="relative h-72 w-full overflow-hidden sm:h-80"
-        >
+        {/* Photo as the hero moment — full-bleed, headline + bio + CTAs all
+            overlaid at the base, mirroring the desktop's cinematic
+            photo-first treatment. flex-1 instead of a fixed aspect ratio so
+            it stretches to fill whatever room is left below the badge and
+            its bottom edge lands flush with the screen edge. */}
+        <Reveal delay={140} className="relative mt-4 min-h-0 flex-1 overflow-hidden">
           <Image
             src="/portrait.png"
             alt="Thiraj Hettiarachchi"
@@ -275,31 +273,27 @@ export default function Hero() {
           />
           <div
             aria-hidden
-            className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
+            className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/40 to-transparent"
           />
-        </Reveal>
-
-        <div className="px-6">
-          <Reveal delay={200} className="relative z-10 -mt-28 sm:-mt-28">
-            <h1 className="font-display text-5xl leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_14px_rgba(0,0,0,0.55)] sm:text-6xl">
+          <div className="absolute inset-x-0 bottom-0 px-6 pb-8">
+            <h1 className="font-display text-5xl leading-[1.1] font-bold tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.5)] sm:text-6xl">
               Code, Applied
               <br />
               <span className="bg-yellow px-2 text-ink">Differently.</span>
             </h1>
-          </Reveal>
 
-          <Reveal delay={260} className="mt-4">
-            <p className="max-w-lg text-lg text-ink-muted mt-6">
-              6+ years shipping production e-commerce platforms: Laravel, React,
-              Python, handling up to $2M in monthly transaction volume.
+            <p className="mt-4 max-w-lg text-lg text-cream/70">
+              6+ years shipping production e-commerce platforms — Laravel,
+              React, Python — handling up to $2M in monthly transaction
+              volume.
             </p>
 
-            <div className="mt-6 flex flex-col gap-2.5 sm:flex-row">
+            <div className="mt-6 flex flex-nowrap gap-3">
               <motion.a
                 whileTap={tapScale}
                 transition={springy}
                 href="#contact"
-                className="w-full rounded-full bg-yellow px-6 py-3 text-center font-display text-sm font-bold whitespace-nowrap text-ink transition-opacity hover:opacity-85 sm:w-auto sm:flex-1 sm:text-base"
+                className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
               >
                 Hire Me for a Project
               </motion.a>
@@ -307,13 +301,13 @@ export default function Hero() {
                 whileTap={tapScale}
                 transition={springy}
                 href="#projects"
-                className="w-full rounded-full bg-yellow px-6 py-3 text-center font-display text-sm font-bold whitespace-nowrap text-ink transition-opacity hover:opacity-85 sm:w-auto sm:flex-1 sm:text-base"
+                className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
               >
                 View My Work
               </motion.a>
             </div>
-          </Reveal>
-        </div>
+          </div>
+        </Reveal>
       </div>
 
       <div className="px-6 pb-16 lg:hidden">
