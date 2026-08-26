@@ -155,7 +155,7 @@ export default function Hero() {
           >
             <div className="flex items-center gap-3 rounded-2xl bg-cream-card/80 px-5 py-4 backdrop-blur-sm">
               <span className="font-display text-3xl font-bold text-yellow">
-                15+
+                100+
               </span>
               <span className="text-sm leading-tight font-medium">
                 Client
@@ -327,7 +327,7 @@ export default function Hero() {
             </div>
             <div className="rounded-2xl bg-cream-card py-4 text-center">
               <div className="font-display text-2xl font-bold text-yellow">
-                15+
+                100+
               </div>
               <div className="mt-1 text-xs text-ink-muted">Projects</div>
             </div>
