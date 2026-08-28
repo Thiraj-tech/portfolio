@@ -100,7 +100,7 @@ export default function Projects() {
               onClick={() => scrollToIndex(activeIndex - 1)}
               disabled={activeIndex === 0}
               aria-label="Previous project"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border-on-black transition hover:border-yellow hover:text-yellow disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow text-ink transition hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30"
             >
               ←
             </button>
@@ -109,7 +109,7 @@ export default function Projects() {
               onClick={() => scrollToIndex(activeIndex + 1)}
               disabled={activeIndex === projects.length - 1}
               aria-label="Next project"
-              className="flex h-10 w-10 items-center justify-center rounded-full border border-border-on-black transition hover:border-yellow hover:text-yellow disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow text-ink transition hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-30"
             >
               →
             </button>
@@ -125,7 +125,7 @@ export default function Projects() {
             {projects.map((project, i) => (
               <div
                 key={project.id}
-                className="w-full shrink-0 snap-start sm:w-[calc(50%-0.75rem)]"
+                className="w-full shrink-0 snap-start sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]"
               >
                 <article
                   className="group h-full overflow-hidden rounded-2xl border border-border-on-black bg-white/[0.03] transition-colors hover:border-yellow/50"
