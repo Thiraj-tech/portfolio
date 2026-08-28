@@ -124,3 +124,4 @@ create policy "admin can delete project media"
     bucket_id = 'project-media'
     and auth.uid() = '00000000-0000-0000-0000-000000000000'
   );
+

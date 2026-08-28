@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
 import { navLinks } from "./navLinks";
 import { springy, tapScale } from "./motionPresets";
@@ -58,6 +59,15 @@ export default function MobileNav() {
                 </a>
               </li>
             ))}
+            <li>
+              <Link
+                href="/blog/"
+                className="block rounded-xl px-4 py-3 text-lg text-ink-muted transition-colors hover:bg-cream-card hover:text-ink"
+                onClick={closeMenu}
+              >
+                Blog
+              </Link>
+            </li>
             <li>
               <motion.a
                 whileTap={tapScale}

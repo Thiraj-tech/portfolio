@@ -457,12 +457,20 @@ export default function AdminProjectsPage() {
       <div className="mx-auto max-w-3xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h1 className="font-display text-3xl font-bold">Projects Admin</h1>
-          <a
-            href="/admin/"
-            className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
-          >
-            ← Review admin
-          </a>
+          <div className="flex flex-wrap gap-3">
+            <a
+              href="/admin/"
+              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
+            >
+              ← Review admin
+            </a>
+            <a
+              href="/admin/blog/"
+              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
+            >
+              Manage blog posts →
+            </a>
+          </div>
         </div>
 
         {authStage === "checking" && (

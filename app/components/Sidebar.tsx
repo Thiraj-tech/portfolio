@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import {
   motion,
   useMotionValueEvent,
@@ -279,6 +280,12 @@ export default function Sidebar() {
             </a>
           );
         })}
+        <Link
+          href="/blog/"
+          className={`rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-500 ${navInactiveClass(darkMap.nav)}`}
+        >
+          Blog
+        </Link>
       </motion.nav>
 
       <motion.button

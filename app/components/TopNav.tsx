@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import {
   animate,
   motion,
@@ -74,6 +75,11 @@ export default function TopNav() {
               </a>
             </li>
           ))}
+          <li>
+            <Link href="/blog/" className="transition-opacity hover:opacity-60">
+              Blog
+            </Link>
+          </li>
         </ul>
         <a
           href="https://linkedin.com/in/thiraj"

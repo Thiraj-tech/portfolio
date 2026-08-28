@@ -3,6 +3,11 @@ name: Deploy to VPS
 on:
   push:
     branches: [ master ]
+  schedule:
+    # Daily rebuild so blog posts added/edited in the admin UI (stored in
+    # Supabase, baked into the static export at build time) go live without
+    # needing a code push.
+    - cron: "0 3 * * *"
 
 jobs:
   deploy:
