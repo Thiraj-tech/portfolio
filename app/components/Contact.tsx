@@ -2,9 +2,16 @@
 
 import { useState, type FormEvent } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { FiDownload, FiSend, FiX } from "react-icons/fi";
 import Reveal from "./Reveal";
 import SectionHeading from "./SectionHeading";
-import { hoverLift, springy, tapScale } from "./motionPresets";
+import {
+  buzzRotate,
+  buzzTransition,
+  hoverLift,
+  springy,
+  tapScale,
+} from "./motionPresets";
 
 const CONTACT_API_URL =
   process.env.NEXT_PUBLIC_CONTACT_API_URL ?? "https://api.thiraj.space/contact";
@@ -77,8 +84,20 @@ export default function Contact() {
                   setStatus("idle");
                 }}
                 aria-expanded={formOpen}
-                className="rounded-full bg-yellow px-6 py-3 font-display font-bold text-ink transition-opacity hover:opacity-85"
+                className="flex items-center gap-2 rounded-full bg-yellow px-6 py-3 font-display font-bold text-ink transition-opacity hover:opacity-85"
               >
+                {formOpen ? (
+                  <FiX className="h-4 w-4" aria-hidden />
+                ) : (
+                  <motion.span
+                    animate={buzzRotate}
+                    transition={buzzTransition}
+                    className="inline-flex"
+                    aria-hidden
+                  >
+                    <FiSend className="h-4 w-4" />
+                  </motion.span>
+                )}
                 {formOpen ? "Hide the Form" : "Send a Message"}
               </motion.button>
               <motion.a
@@ -96,8 +115,9 @@ export default function Contact() {
                 transition={springy}
                 href="/Thiraj_Hettiarachchi_CV.pdf"
                 download
-                className="rounded-full border border-border-on-black px-6 py-3 font-display font-bold transition-colors hover:bg-white/10"
+                className="flex items-center gap-2 rounded-full border border-border-on-black px-6 py-3 font-display font-bold transition-colors hover:bg-white/10"
               >
+                <FiDownload className="h-4 w-4" aria-hidden />
                 Download CV
               </motion.a>
             </div>
