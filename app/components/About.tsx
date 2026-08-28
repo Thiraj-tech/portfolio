@@ -26,7 +26,7 @@ const milestones: Milestone[] = [
     year: "'16",
     title: "Starting out in Dubai",
     summary:
-      "IT support at Madinat Jumeirah — a luxury resort with 500+ guests and staff depending on the network staying up.",
+      "IT support at a luxury resort with 500+ guests and staff depending on the network staying up.",
     detail:
       "Peak-season pressure, POS rollouts for three new restaurants, and security hardening that measurably cut incidents. Not writing much code yet, but learning what 'production' really means.",
     handle: "@dubai",
@@ -36,9 +36,9 @@ const milestones: Milestone[] = [
     year: "'19",
     title: "First developer role",
     summary:
-      "Joined WebTechno remotely and went from support tickets to shipping real client work.",
+      "Joined WebTechno as a remote developer, going from support tickets to shipping real client work.",
     detail:
-      "Custom themes and plugins across WordPress, Shopify, Wix, Squarespace, and GoDaddy for international clients. 100+ projects delivered end to end, from requirements to launch and support.",
+      "Custom themes and plugins across WordPress, Shopify, Wix, Squarespace, and GoDaddy for international clients — 15+ projects delivered end to end, from requirements to launch and support.",
     handle: "@webtechno",
     time: "7 years ago",
   },
@@ -116,7 +116,7 @@ export default function About() {
         <SectionHeading
           eyebrow="Start small, grow big"
           title="About Me (&) My Journey"
-          description="Ten years ago I was fixing resort networks in Dubai. What happened after that is easier to show than explain."
+          description="Ten years ago I was fixing resort networks in Dubai. Since then I've become a full stack developer building Laravel and React platforms for clients worldwide — the story's easier to show than explain."
         />
 
         <motion.span

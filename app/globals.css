@@ -60,7 +60,7 @@ body {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(6rem, 18vw, 13rem);
+  font-size: clamp(3rem, 18vw, 13rem);
   font-weight: 800;
   line-height: 0.8;
   white-space: nowrap;

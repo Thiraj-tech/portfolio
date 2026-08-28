@@ -92,7 +92,7 @@ export default function Projects() {
             tone="dark"
             eyebrow="Selected work"
             title="Built to Ship, Made to Perform"
-            description="Over six years I've helped businesses turn ideas into platforms that look and work exactly how they imagined. Here's a look at some of that work."
+            description="Over six years I've delivered freelance projects for clients as well as full-time platform work — here's a look at some of it."
           />
           <div className="hidden shrink-0 gap-3 sm:flex">
             <button
@@ -150,7 +150,13 @@ export default function Projects() {
                           <span className="rounded-full bg-white/10 px-3 py-1 font-mono text-sm text-cream/70">
                             {String(i + 1).padStart(2, "0")}
                           </span>
-                          <span className="rounded-full border border-dashed border-border-on-black px-3 py-1 font-mono text-xs text-cream/50">
+                          <span
+                            className={`rounded-full px-3 py-1 font-mono text-xs ${
+                              project.engagement === "Freelance"
+                                ? "bg-yellow text-ink"
+                                : "border border-dashed border-border-on-black text-cream/50"
+                            }`}
+                          >
                             {project.engagement}
                           </span>
                         </div>
