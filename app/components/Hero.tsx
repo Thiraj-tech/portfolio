@@ -306,10 +306,10 @@ export default function Hero() {
               <motion.a
                 whileTap={tapScale}
                 transition={springy}
-                href="#projects"
+                href="#about"
                 className="flex-1 rounded-full bg-yellow px-3 py-3 text-center font-display text-xs font-bold text-ink transition-opacity hover:opacity-85 sm:px-6 sm:text-base"
               >
-                My Work
+                About Me
               </motion.a>
             </div>
           </div>

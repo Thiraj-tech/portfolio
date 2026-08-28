@@ -115,7 +115,13 @@ export default function ProjectModal({
         )}
 
         <div className="mt-6 flex flex-wrap items-center gap-2 pr-10">
-          <span className="rounded-full border border-dashed border-border-on-black px-3 py-1 font-mono text-xs text-cream/50">
+          <span
+            className={`rounded-full px-3 py-1 font-mono text-xs ${
+              project.engagement === "Freelance"
+                ? "bg-yellow text-ink"
+                : "border border-dashed border-border-on-black text-cream/50"
+            }`}
+          >
             {project.engagement}
           </span>
           {project.tags.map((tag) => (

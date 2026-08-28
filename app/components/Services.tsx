@@ -33,9 +33,9 @@ const services = [
       "Claude Code, MCP servers, and LLM-assisted pipelines applied to real production work — shipping faster without sacrificing quality.",
   },
   {
-    title: "Open to Full-Time Roles",
+    title: "Open to Remote & Full-Time Roles",
     description:
-      "Alongside freelance projects, I'm open to the right full-time opportunity — remote or hybrid, flexible hours, overlapping most time zones.",
+      "Alongside freelance projects, I'm open to full-time remote or hybrid roles — flexible hours, most time zones covered.",
   },
 ];
 
@@ -72,7 +72,7 @@ export default function Services() {
         <SectionHeading
           eyebrow="Capabilities overview"
           title="What You Get"
-          description="Strategy, precision, and development combined — turning your vision into a digital experience that feels effortless."
+          description="The same skills I use to run production e-commerce platforms — full stack development, API integrations, performance and SEO — available for your team or your next project."
         />
 
         <motion.span
