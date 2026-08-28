@@ -19,13 +19,18 @@ const displayFont = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://thiraj.space"),
   title: "Thiraj Hettiarachchi — Full Stack Engineer",
   description:
     "Full stack engineer with 6+ years shipping production e-commerce platforms — Laravel, React, Python. Available for freelance projects and open to full-time opportunities.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     title: "Thiraj Hettiarachchi — Full Stack Engineer",
     description:
       "Full stack engineer with 6+ years shipping production e-commerce platforms — available for freelance and full-time roles.",
+    url: "/",
     type: "website",
   },
   icons: {
@@ -36,6 +41,9 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   manifest: "/site.webmanifest",
+  verification: {
+    google: "_t0C-j4vAqSobZn4HPH0F0ndEOxEMMudgWOaQ7CB3kY",
+  },
 };
 
 export default function RootLayout({
