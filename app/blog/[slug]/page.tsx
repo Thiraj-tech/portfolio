@@ -1,8 +1,47 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import ReactMarkdown from "react-markdown";
+import sanitizeHtml from "sanitize-html";
 import BlogHeader from "../../components/BlogHeader";
 import { supabase } from "../../lib/supabaseClient";
+
+const supabaseImageHost = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ""}/storage/v1/object/public/project-media/`;
+
+function renderPostHtml(html: string) {
+  return sanitizeHtml(html, {
+    allowedTags: [
+      "h1", "h2", "h3", "p", "a", "ul", "ol", "li",
+      "blockquote", "code", "pre", "strong", "em", "img", "br",
+    ],
+    allowedAttributes: {
+      a: ["href", "rel", "target"],
+      img: ["src", "alt", "style"],
+    },
+    allowedStyles: {
+      img: {
+        width: [/^\d{1,3}%$/],
+        float: [/^(left|right|none)$/],
+        display: [/^block$/],
+        margin: [/^(0|auto|[\d.]+(rem|px|em))(\s+(0|auto|[\d.]+(rem|px|em)))*$/],
+      },
+    },
+    allowedSchemes: ["https"],
+    transformTags: {
+      img: (tagName, attribs): sanitizeHtml.Tag => {
+        if (!attribs.src?.startsWith(supabaseImageHost)) {
+          return { tagName: "", attribs: {} };
+        }
+        return {
+          tagName,
+          attribs: { src: attribs.src, alt: attribs.alt ?? "", style: attribs.style ?? "" },
+        };
+      },
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: { ...attribs, rel: "noopener noreferrer", target: "_blank" },
+      }),
+    },
+  });
+}
 
 type Post = {
   slug: string;
@@ -139,44 +178,10 @@ export default async function BlogPostPage({
             className="mt-8 h-80 w-full rounded-2xl object-cover"
           />
         )}
-        <div className="mt-10 space-y-5 text-lg leading-relaxed text-ink">
-          <ReactMarkdown
-            components={{
-              h1: (props) => (
-                <h2 className="font-display text-3xl font-bold tracking-tight" {...props} />
-              ),
-              h2: (props) => (
-                <h2 className="font-display text-2xl font-bold tracking-tight" {...props} />
-              ),
-              h3: (props) => (
-                <h3 className="font-display text-xl font-bold tracking-tight" {...props} />
-              ),
-              p: (props) => <p className="text-ink" {...props} />,
-              a: (props) => (
-                <a
-                  className="font-medium text-ink underline decoration-yellow decoration-2 underline-offset-2 hover:text-ink-muted"
-                  {...props}
-                />
-              ),
-              ul: (props) => <ul className="list-disc space-y-2 pl-6" {...props} />,
-              ol: (props) => <ol className="list-decimal space-y-2 pl-6" {...props} />,
-              blockquote: (props) => (
-                <blockquote
-                  className="border-l-4 border-yellow pl-4 text-ink-muted italic"
-                  {...props}
-                />
-              ),
-              code: (props) => (
-                <code className="rounded bg-cream-card-2 px-1.5 py-0.5 font-mono text-base" {...props} />
-              ),
-              pre: (props) => (
-                <pre className="overflow-x-auto rounded-xl bg-ink p-4 text-sm text-cream" {...props} />
-              ),
-            }}
-          >
-            {post.content}
-          </ReactMarkdown>
-        </div>
+        <div
+          className="mt-10 space-y-5 text-lg leading-relaxed text-ink [&_h1]:font-display [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:tracking-tight [&_a]:font-medium [&_a]:text-ink [&_a]:underline [&_a]:decoration-yellow [&_a]:decoration-2 [&_a]:underline-offset-2 [&_a:hover]:text-ink-muted [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-yellow [&_blockquote]:pl-4 [&_blockquote]:text-ink-muted [&_blockquote]:italic [&_code]:rounded [&_code]:bg-cream-card-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-cream [&_img]:rounded-2xl [&_img]:w-full"
+          dangerouslySetInnerHTML={{ __html: renderPostHtml(post.content) }}
+        />
       </article>
     </main>
   );

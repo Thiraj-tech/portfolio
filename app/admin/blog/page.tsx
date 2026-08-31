@@ -3,6 +3,7 @@
 import { useEffect, useState, type ChangeEvent } from "react";
 import AdminLoginForm from "../../components/AdminLoginForm";
 import { supabase } from "../../lib/supabaseClient";
+import PostEditor from "./PostEditor";
 
 type AuthStage = "checking" | "loggedOut" | "loggedIn";
 
@@ -32,7 +33,7 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "");
 }
 
-async function uploadPostCover(
+export async function uploadPostCover(
   file: File,
   slug: string,
 ): Promise<{ url: string | null; error: string | null }> {
@@ -91,7 +92,8 @@ function PostForm({
   };
 
   const handleSubmit = async (status: "draft" | "published") => {
-    if (!title.trim() || !slug.trim() || !excerpt.trim() || !content.trim()) {
+    const isContentEmpty = !content.trim() || content.trim() === "<p></p>";
+    if (!title.trim() || !slug.trim() || !excerpt.trim() || isContentEmpty) {
       setError("Title, slug, excerpt, and content are required.");
       return;
     }
@@ -180,16 +182,8 @@ function PostForm({
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm text-cream/70">
-          Content (Markdown)
-        </label>
-        <textarea
-          required
-          rows={14}
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className={`${fieldClass} font-mono`}
-        />
+        <label className="mb-1.5 block text-sm text-cream/70">Content</label>
+        <PostEditor content={content} onChange={setContent} slug={slug} />
       </div>
 
       <div>
@@ -330,7 +324,13 @@ export default function AdminBlogPage() {
               href="/admin/"
               className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
             >
-              ← Review admin
+              ← Dashboard
+            </a>
+            <a
+              href="/admin/reviews/"
+              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
+            >
+              Manage reviews →
             </a>
             <a
               href="/admin/projects/"

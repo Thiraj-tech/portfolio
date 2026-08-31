@@ -462,7 +462,13 @@ export default function AdminProjectsPage() {
               href="/admin/"
               className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
             >
-              ← Review admin
+              ← Dashboard
+            </a>
+            <a
+              href="/admin/reviews/"
+              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
+            >
+              Manage reviews →
             </a>
             <a
               href="/admin/blog/"

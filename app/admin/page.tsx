@@ -1,121 +1,73 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import AdminLoginForm from "../components/AdminLoginForm";
-import Avatar from "../components/Avatar";
-import Stars from "../components/Stars";
 import { supabase } from "../lib/supabaseClient";
 
 type AuthStage = "checking" | "loggedOut" | "loggedIn";
 
-type ReviewRequest = {
-  id: string;
-  client_name: string | null;
-  created_at: string;
+type Counts = {
+  pendingReviews: number | null;
+  projects: number | null;
+  publishedPosts: number | null;
 };
 
-type PendingReview = {
-  id: string;
-  name: string;
-  avatar_url: string | null;
-  country: string | null;
-  quote: string;
-  rating: number;
-  created_at: string;
-};
-
-const fieldClass =
-  "w-full rounded-xl border border-border-on-black bg-white/[0.04] px-4 py-2.5 text-sm text-cream placeholder:text-cream/30 transition-colors focus:border-yellow focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow/70";
-
-function GenerateLink({ onCreated }: { onCreated: (r: ReviewRequest) => void }) {
-  const [clientName, setClientName] = useState("");
-  const [link, setLink] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setCopied(false);
-    setError(null);
-    const { data, error: dbError } = await supabase
-      .from("review_requests")
-      .insert({ client_name: clientName || null })
-      .select()
-      .single();
-    setSubmitting(false);
-    if (dbError || !data) {
-      setError(dbError?.message ?? "Something went wrong generating the link.");
-      return;
-    }
-
-    onCreated(data as ReviewRequest);
-    setLink(`${window.location.origin}/review/?token=${data.id}`);
-    setClientName("");
-  };
-
+function DashboardCard({
+  href,
+  title,
+  description,
+  count,
+  countLabel,
+}: {
+  href: string;
+  title: string;
+  description: string;
+  count: number | null;
+  countLabel: string;
+}) {
   return (
-    <div>
-      <form onSubmit={handleSubmit} className="flex flex-wrap gap-3">
-        <input
-          type="text"
-          placeholder="Client name (optional)"
-          value={clientName}
-          onChange={(e) => setClientName(e.target.value)}
-          className={`${fieldClass} max-w-xs`}
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-full bg-yellow px-5 py-2.5 text-sm font-display font-bold text-ink transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-60"
-        >
-          {submitting ? "Generating…" : "Generate link"}
-        </button>
-      </form>
-
-      {error && <p className="mt-3 text-sm text-red-400">{error}</p>}
-
-      {link && (
-        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-border-on-black bg-white/[0.04] px-4 py-3 text-sm">
-          <span className="break-all text-cream/80">{link}</span>
-          <button
-            type="button"
-            onClick={() => {
-              navigator.clipboard.writeText(link);
-              setCopied(true);
-            }}
-            className="shrink-0 rounded-full border border-border-on-black px-3 py-1 text-xs font-medium transition hover:border-yellow hover:text-yellow"
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-        </div>
-      )}
-    </div>
+    <a
+      href={href}
+      className="block rounded-2xl border border-border-on-black bg-white/[0.03] p-6 transition hover:border-yellow hover:bg-white/[0.05]"
+    >
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 className="font-display text-xl font-bold text-yellow">{title}</h2>
+        {count !== null && (
+          <span className="shrink-0 rounded-full bg-yellow/20 px-2.5 py-0.5 text-xs font-medium text-yellow">
+            {count} {countLabel}
+          </span>
+        )}
+      </div>
+      <p className="mt-2 text-sm text-cream/60">{description}</p>
+    </a>
   );
 }
 
-export default function AdminPage() {
+export default function AdminDashboardPage() {
   const [authStage, setAuthStage] = useState<AuthStage>("checking");
-  const [pending, setPending] = useState<PendingReview[]>([]);
-  const [recentLinks, setRecentLinks] = useState<ReviewRequest[]>([]);
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [counts, setCounts] = useState<Counts>({
+    pendingReviews: null,
+    projects: null,
+    publishedPosts: null,
+  });
 
-  const loadData = () => {
+  const loadCounts = () => {
     supabase
       .from("reviews")
-      .select("id, name, avatar_url, country, quote, rating, created_at")
+      .select("*", { count: "exact", head: true })
       .eq("status", "pending")
-      .order("created_at", { ascending: false })
-      .then(({ data }) => setPending((data as PendingReview[]) ?? []));
+      .then(({ count }) => setCounts((prev) => ({ ...prev, pendingReviews: count ?? 0 })));
 
     supabase
-      .from("review_requests")
-      .select("id, client_name, created_at")
-      .is("used_at", null)
-      .order("created_at", { ascending: false })
-      .limit(20)
-      .then(({ data }) => setRecentLinks((data as ReviewRequest[]) ?? []));
+      .from("projects")
+      .select("*", { count: "exact", head: true })
+      .then(({ count }) => setCounts((prev) => ({ ...prev, projects: count ?? 0 })));
+
+    supabase
+      .from("posts")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "published")
+      .then(({ count }) => setCounts((prev) => ({ ...prev, publishedPosts: count ?? 0 })));
   };
 
   useEffect(() => {
@@ -123,36 +75,15 @@ export default function AdminPage() {
       .getUser()
       .then(({ data }) => {
         setAuthStage(data.user ? "loggedIn" : "loggedOut");
-        if (data.user) loadData();
+        if (data.user) loadCounts();
       })
       .catch(() => setAuthStage("loggedOut"));
   }, []);
 
-  const decide = async (id: string, status: "approved" | "rejected") => {
-    setPending((prev) => prev.filter((r) => r.id !== id));
-    await supabase.from("reviews").update({ status }).eq("id", id);
-  };
-
   return (
     <main className="min-h-screen bg-ink px-6 py-16 text-cream">
       <div className="mx-auto max-w-3xl">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="font-display text-3xl font-bold">Review Admin</h1>
-          <div className="flex flex-wrap gap-3">
-            <a
-              href="/admin/projects/"
-              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
-            >
-              Manage projects →
-            </a>
-            <a
-              href="/admin/blog/"
-              className="rounded-full border border-border-on-black px-4 py-2 text-sm font-medium transition hover:border-yellow hover:text-yellow"
-            >
-              Manage blog posts →
-            </a>
-          </div>
-        </div>
+        <h1 className="font-display text-3xl font-bold">Admin Dashboard</h1>
 
         {authStage === "checking" && (
           <p className="mt-6 text-cream/60">Checking session…</p>
@@ -162,102 +93,36 @@ export default function AdminPage() {
           <AdminLoginForm
             onLoggedIn={() => {
               setAuthStage("loggedIn");
-              loadData();
+              loadCounts();
             }}
           />
         )}
 
         {authStage === "loggedIn" && (
-          <div className="mt-8 space-y-12">
-            <section>
-              <h2 className="font-display text-xl font-bold text-yellow">
-                Generate a review link
-              </h2>
-              <div className="mt-4">
-                <GenerateLink
-                  onCreated={(r) => setRecentLinks((prev) => [r, ...prev])}
-                />
-              </div>
-            </section>
-
-            <section>
-              <h2 className="font-display text-xl font-bold text-yellow">
-                Pending reviews ({pending.length})
-              </h2>
-              <div className="mt-4 space-y-4">
-                {pending.length === 0 && (
-                  <p className="text-sm text-cream/50">Nothing to review right now.</p>
-                )}
-                {pending.map((r) => (
-                  <div
-                    key={r.id}
-                    className="rounded-2xl border border-dashed border-border-on-black bg-white/[0.03] p-5"
-                  >
-                    <Stars rating={r.rating} />
-                    <blockquote className="mt-3 text-sm leading-relaxed text-cream/70">
-                      &ldquo;{r.quote}&rdquo;
-                    </blockquote>
-                    <div className="mt-4 flex items-center gap-3">
-                      <Avatar name={r.name} avatar={r.avatar_url} />
-                      <div>
-                        <div className="font-medium">{r.name}</div>
-                        {r.country && (
-                          <div className="text-sm text-cream/50">{r.country}</div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-4 flex gap-3">
-                      <button
-                        type="button"
-                        onClick={() => decide(r.id, "approved")}
-                        className="rounded-full bg-yellow px-4 py-1.5 text-sm font-display font-bold text-ink transition-opacity hover:opacity-85"
-                      >
-                        Approve
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => decide(r.id, "rejected")}
-                        className="rounded-full border border-border-on-black px-4 py-1.5 text-sm font-medium transition hover:bg-white/10"
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section>
-              <h2 className="font-display text-xl font-bold text-yellow">
-                Unused links
-              </h2>
-              <div className="mt-4 space-y-2">
-                {recentLinks.length === 0 && (
-                  <p className="text-sm text-cream/50">None generated yet.</p>
-                )}
-                {recentLinks.map((r) => {
-                  const url = `${typeof window !== "undefined" ? window.location.origin : ""}/review/?token=${r.id}`;
-                  return (
-                    <div
-                      key={r.id}
-                      className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-border-on-black bg-white/[0.03] px-4 py-2.5 text-sm"
-                    >
-                      <span>{r.client_name || "(unnamed)"}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          navigator.clipboard.writeText(url);
-                          setCopiedId(r.id);
-                        }}
-                        className="rounded-full border border-border-on-black px-3 py-1 text-xs font-medium transition hover:border-yellow hover:text-yellow"
-                      >
-                        {copiedId === r.id ? "Copied!" : "Copy link"}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
+          <div className="mt-8 space-y-8">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <DashboardCard
+                href="/admin/reviews/"
+                title="Reviews"
+                description="Approve or reject client reviews and generate submission links."
+                count={counts.pendingReviews}
+                countLabel="pending"
+              />
+              <DashboardCard
+                href="/admin/projects/"
+                title="Projects"
+                description="Manage the projects shown on the portfolio."
+                count={counts.projects}
+                countLabel="total"
+              />
+              <DashboardCard
+                href="/admin/blog/"
+                title="Blog"
+                description="Write and publish blog posts."
+                count={counts.publishedPosts}
+                countLabel="published"
+              />
+            </div>
 
             <button
               type="button"
