@@ -104,7 +104,7 @@ function Toolbar({
   htmlPanelOpen: boolean;
 }) {
   return (
-    <div className="mb-2 flex flex-wrap gap-1.5 border-b border-border-on-black pb-2">
+    <div className="sticky top-0 z-10 mb-2 flex flex-wrap gap-1.5 border-b border-border-on-black bg-ink pt-2 pb-2">
       <ToolbarButton
         active={editor.isActive("heading", { level: 1 })}
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
