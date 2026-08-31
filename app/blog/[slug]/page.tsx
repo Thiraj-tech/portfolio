@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import sanitizeHtml from "sanitize-html";
 import BlogHeader from "../../components/BlogHeader";
+import PostLikeButton from "../../components/PostLikeButton";
+import PostComments from "../../components/PostComments";
 import { supabase } from "../../lib/supabaseClient";
 
 const supabaseImageHost = `${process.env.NEXT_PUBLIC_SUPABASE_URL || ""}/storage/v1/object/public/project-media/`;
@@ -44,6 +46,7 @@ function renderPostHtml(html: string) {
 }
 
 type Post = {
+  id: string;
   slug: string;
   title: string;
   excerpt: string;
@@ -57,7 +60,7 @@ type Post = {
 async function getPost(slug: string): Promise<Post | null> {
   const { data, error } = await supabase
     .from("posts")
-    .select("slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at")
+    .select("id, slug, title, excerpt, content, cover_image_url, tags, published_at, updated_at")
     .eq("status", "published")
     .eq("slug", slug)
     .maybeSingle();
@@ -145,16 +148,19 @@ export default async function BlogPostPage({
         }}
       />
       <BlogHeader />
-      <article className="mx-auto max-w-2xl px-6 pb-24">
-        {post.published_at && (
-          <span className="font-mono text-xs text-ink-muted">
-            {new Date(post.published_at).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </span>
-        )}
+      <article className="mx-auto max-w-4xl px-6 pb-24">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {post.published_at && (
+            <span className="font-mono text-xs text-ink-muted">
+              {new Date(post.published_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </span>
+          )}
+          <PostLikeButton postId={post.id} />
+        </div>
         <h1 className="mt-2 font-display text-4xl font-bold tracking-tight sm:text-5xl">
           {post.title}
         </h1>
@@ -182,6 +188,8 @@ export default async function BlogPostPage({
           className="mt-10 space-y-5 text-lg leading-relaxed text-ink [&_h1]:font-display [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:tracking-tight [&_a]:font-medium [&_a]:text-ink [&_a]:underline [&_a]:decoration-yellow [&_a]:decoration-2 [&_a]:underline-offset-2 [&_a:hover]:text-ink-muted [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-yellow [&_blockquote]:pl-4 [&_blockquote]:text-ink-muted [&_blockquote]:italic [&_code]:rounded [&_code]:bg-cream-card-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-cream [&_img]:rounded-2xl [&_img]:w-full"
           dangerouslySetInnerHTML={{ __html: renderPostHtml(post.content) }}
         />
+
+        <PostComments postId={post.id} />
       </article>
     </main>
   );
