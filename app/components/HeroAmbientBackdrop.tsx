@@ -33,7 +33,7 @@ export default function HeroAmbientBackdrop() {
         style={{ scale, filter: blur }}
       >
         <Image
-          src="/portrait.png"
+          src="/portrait.webp"
           alt=""
           width={846}
           height={914}

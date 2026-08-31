@@ -139,11 +139,12 @@ export default function Hero() {
               }}
             >
               <Image
-                src="/portrait.png"
+                src="/portrait.webp"
                 alt="Thiraj Hettiarachchi"
                 width={846}
                 height={914}
                 priority
+                fetchPriority="high"
                 className="relative z-10 h-full w-auto object-contain object-bottom"
               />
             </motion.div>
@@ -271,10 +272,11 @@ export default function Hero() {
           className="relative mt-4 flex flex-1 flex-col justify-end overflow-hidden"
         >
           <Image
-            src="/portrait.png"
+            src="/portrait.webp"
             alt="Thiraj Hettiarachchi"
             fill
             priority
+            fetchPriority="high"
             sizes="100vw"
             className="object-cover object-[calc(50%_+_25px)_top]"
           />
