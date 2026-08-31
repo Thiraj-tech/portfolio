@@ -13,6 +13,7 @@ function renderPostHtml(html: string) {
     allowedTags: [
       "h1", "h2", "h3", "p", "a", "ul", "ol", "li",
       "blockquote", "code", "pre", "strong", "em", "img", "br",
+      "table", "thead", "tbody", "tr", "th", "td",
     ],
     allowedAttributes: {
       a: ["href", "rel", "target"],
@@ -185,7 +186,7 @@ export default async function BlogPostPage({
           />
         )}
         <div
-          className="mt-10 space-y-5 text-lg leading-relaxed text-ink [&_h1]:font-display [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:tracking-tight [&_a]:font-medium [&_a]:text-ink [&_a]:underline [&_a]:decoration-yellow [&_a]:decoration-2 [&_a]:underline-offset-2 [&_a:hover]:text-ink-muted [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-yellow [&_blockquote]:pl-4 [&_blockquote]:text-ink-muted [&_blockquote]:italic [&_code]:rounded [&_code]:bg-cream-card-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-cream [&_img]:rounded-2xl [&_img]:w-full"
+          className="mt-10 space-y-5 text-lg leading-relaxed text-ink [&_h1]:font-display [&_h1]:text-3xl [&_h1]:font-bold [&_h1]:tracking-tight [&_h2]:font-display [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:tracking-tight [&_h3]:font-display [&_h3]:text-xl [&_h3]:font-bold [&_h3]:tracking-tight [&_a]:font-medium [&_a]:text-ink [&_a]:underline [&_a]:decoration-yellow [&_a]:decoration-2 [&_a]:underline-offset-2 [&_a:hover]:text-ink-muted [&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-6 [&_blockquote]:border-l-4 [&_blockquote]:border-yellow [&_blockquote]:pl-4 [&_blockquote]:text-ink-muted [&_blockquote]:italic [&_code]:rounded [&_code]:bg-cream-card-2 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-base [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-cream [&_img]:rounded-2xl [&_img]:w-full [&_table]:block [&_table]:w-max [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_th]:border [&_th]:border-ink/15 [&_th]:bg-cream-card-2 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_td]:border [&_td]:border-ink/15 [&_td]:px-3 [&_td]:py-2"
           dangerouslySetInnerHTML={{ __html: renderPostHtml(post.content) }}
         />
 

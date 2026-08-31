@@ -3,6 +3,7 @@
 import { EditorContent, useEditor, type Editor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TiptapImage from "@tiptap/extension-image";
+import { TableKit } from "@tiptap/extension-table";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import {
   FiBold,
@@ -14,6 +15,9 @@ import {
   FiAlignLeft,
   FiAlignCenter,
   FiAlignRight,
+  FiTable,
+  FiTrash2,
+  FiTerminal,
 } from "react-icons/fi";
 import { uploadPostCover } from "./page";
 
@@ -90,10 +94,14 @@ function Toolbar({
   editor,
   onInsertImageClick,
   uploading,
+  onToggleHtmlPanel,
+  htmlPanelOpen,
 }: {
   editor: Editor;
   onInsertImageClick: () => void;
   uploading: boolean;
+  onToggleHtmlPanel: () => void;
+  htmlPanelOpen: boolean;
 }) {
   return (
     <div className="mb-2 flex flex-wrap gap-1.5 border-b border-border-on-black pb-2">
@@ -161,6 +169,13 @@ function Toolbar({
         <FiCode />
       </ToolbarButton>
       <ToolbarButton
+        active={editor.isActive("codeBlock")}
+        onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+        label="Code block"
+      >
+        <FiTerminal />
+      </ToolbarButton>
+      <ToolbarButton
         active={editor.isActive("link")}
         onClick={() => {
           if (editor.isActive("link")) {
@@ -181,6 +196,63 @@ function Toolbar({
       >
         {uploading ? "…" : <FiImage />}
       </ToolbarButton>
+      <ToolbarButton
+        active={htmlPanelOpen}
+        onClick={onToggleHtmlPanel}
+        label="Insert raw HTML"
+      >
+        HTML
+      </ToolbarButton>
+
+      <ToolbarButton
+        active={false}
+        onClick={() =>
+          editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()
+        }
+        label="Insert table"
+      >
+        <FiTable />
+      </ToolbarButton>
+
+      {editor.isActive("table") && (
+        <>
+          <ToolbarButton
+            active={false}
+            onClick={() => editor.chain().focus().addRowAfter().run()}
+            label="Add row"
+          >
+            +Row
+          </ToolbarButton>
+          <ToolbarButton
+            active={false}
+            onClick={() => editor.chain().focus().addColumnAfter().run()}
+            label="Add column"
+          >
+            +Col
+          </ToolbarButton>
+          <ToolbarButton
+            active={false}
+            onClick={() => editor.chain().focus().deleteRow().run()}
+            label="Delete row"
+          >
+            -Row
+          </ToolbarButton>
+          <ToolbarButton
+            active={false}
+            onClick={() => editor.chain().focus().deleteColumn().run()}
+            label="Delete column"
+          >
+            -Col
+          </ToolbarButton>
+          <ToolbarButton
+            active={false}
+            onClick={() => editor.chain().focus().deleteTable().run()}
+            label="Delete table"
+          >
+            <FiTrash2 />
+          </ToolbarButton>
+        </>
+      )}
 
       <span className="mx-1 self-center text-xs text-cream/40">
         Selected image:
@@ -223,16 +295,22 @@ export default function PostEditor({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [htmlPanelOpen, setHtmlPanelOpen] = useState(false);
+  const [htmlInput, setHtmlInput] = useState("");
 
   const editor = useEditor({
-    extensions: [StarterKit.configure({ heading: { levels: [1, 2, 3] } }), ResizableImage],
+    extensions: [
+      StarterKit.configure({ heading: { levels: [1, 2, 3] } }),
+      ResizableImage,
+      TableKit,
+    ],
     content,
     immediatelyRender: false,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
         class:
-          "w-full min-h-64 rounded-xl border border-border-on-black bg-white/[0.04] px-4 py-2.5 text-sm text-cream focus:border-yellow focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow/70 [&_p]:my-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-yellow [&_blockquote]:pl-3 [&_blockquote]:italic [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1 [&_code]:font-mono [&_a]:text-yellow [&_a]:underline [&_img]:my-2 [&_img]:max-w-full [&_img]:rounded-lg",
+          "w-full min-h-64 rounded-xl border border-border-on-black bg-white/[0.04] px-4 py-2.5 text-sm text-cream focus:border-yellow focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow/70 [&_p]:my-2 [&_h1]:text-2xl [&_h1]:font-bold [&_h2]:text-xl [&_h2]:font-bold [&_h3]:text-lg [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-yellow [&_blockquote]:pl-3 [&_blockquote]:italic [&_code]:rounded [&_code]:bg-white/10 [&_code]:px-1 [&_code]:font-mono [&_pre]:my-2 [&_pre]:overflow-x-auto [&_pre]:rounded-lg [&_pre]:bg-black/40 [&_pre]:p-3 [&_pre]:font-mono [&_pre]:text-xs [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_a]:text-yellow [&_a]:underline [&_img]:my-2 [&_img]:max-w-full [&_img]:rounded-lg [&_table]:my-2 [&_table]:block [&_table]:w-max [&_table]:max-w-full [&_table]:overflow-x-auto [&_table]:border-collapse [&_th]:border [&_th]:border-border-on-black [&_th]:bg-white/10 [&_th]:px-3 [&_th]:py-1.5 [&_th]:text-left [&_td]:border [&_td]:border-border-on-black [&_td]:px-3 [&_td]:py-1.5",
       },
     },
   });
@@ -255,6 +333,22 @@ export default function PostEditor({
     setUploading(false);
   };
 
+  const handleInsertHtml = () => {
+    if (!htmlInput.trim() || !editor) return;
+    // Whitespace (newlines/indentation) between tags in pretty-printed HTML
+    // gets parsed into stray text nodes that ProseMirror's table schema
+    // can't place, so it pads them out as empty cells/rows — stripping
+    // inter-tag whitespace first avoids that.
+    const cleaned = htmlInput.replace(/>\s+</g, "><").trim();
+    editor
+      .chain()
+      .focus()
+      .insertContent(cleaned, { parseOptions: { preserveWhitespace: false } })
+      .run();
+    setHtmlInput("");
+    setHtmlPanelOpen(false);
+  };
+
   if (!editor) return null;
 
   return (
@@ -263,7 +357,40 @@ export default function PostEditor({
         editor={editor}
         onInsertImageClick={() => fileInputRef.current?.click()}
         uploading={uploading}
+        onToggleHtmlPanel={() => setHtmlPanelOpen((prev) => !prev)}
+        htmlPanelOpen={htmlPanelOpen}
       />
+      {htmlPanelOpen && (
+        <div className="mb-2 rounded-xl border border-border-on-black bg-white/[0.03] p-3">
+          <textarea
+            rows={6}
+            value={htmlInput}
+            onChange={(e) => setHtmlInput(e.target.value)}
+            placeholder="Paste raw HTML here (e.g. a <table>…</table>) and it will be inserted as real content"
+            className="w-full rounded-lg border border-border-on-black bg-white/[0.04] px-3 py-2 font-mono text-xs text-cream focus:border-yellow focus:outline-none"
+          />
+          <div className="mt-2 flex gap-2">
+            <button
+              type="button"
+              onClick={handleInsertHtml}
+              disabled={!htmlInput.trim()}
+              className="rounded-full bg-yellow px-4 py-1.5 text-xs font-display font-bold text-ink transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              Insert
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setHtmlPanelOpen(false);
+                setHtmlInput("");
+              }}
+              className="rounded-full border border-border-on-black px-4 py-1.5 text-xs font-medium transition hover:border-yellow hover:text-yellow"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
       <EditorContent editor={editor} />
       <input
         ref={fileInputRef}
