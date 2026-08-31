@@ -8,6 +8,7 @@ on:
     # Supabase, baked into the static export at build time) go live without
     # needing a code push.
     - cron: "0 3 * * *"
+  workflow_dispatch: {}
 
 jobs:
   deploy:
